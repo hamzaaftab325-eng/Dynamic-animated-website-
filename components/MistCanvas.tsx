@@ -49,7 +49,7 @@ void main() {
   float aspect = uResolution.x / max(uResolution.y, 1.0);
   vec2 p = vec2((uv.x - 0.5) * aspect, uv.y - 0.5);
 
-  float t = uTime * 0.035;
+  float t = uTime * 0.055;
   vec2 drift = uMouse * 0.035;
   float n1 = fbm(p * 1.75 + vec2(t, -t * 0.55) + drift);
   float n2 = fbm(p * 2.7 + vec2(-t * 0.7, t * 0.45) - drift * 0.8);
@@ -124,7 +124,7 @@ export default function MistCanvas() {
     };
 
     const tick = (time: number) => {
-      pointer.lerp(target, reduced ? 0 : 0.028);
+      pointer.lerp(target, reduced ? 0 : 0.055);
       uniforms.uMouse.value.copy(pointer);
       uniforms.uTime.value = reduced ? 0 : time * 0.001;
       renderer.render(scene, camera);
