@@ -163,30 +163,105 @@ export default function Home() {
     if (reduced) return;
 
     const ctx = gsap.context(() => {
-      gsap.fromTo(
-        ".hero-kicker, .hero-title .line, .hero-meta, .scroll-cue",
-        { y: 24, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.9, stagger: 0.075, ease: "power4.out", delay: 0.06 }
-      );
+      gsap.defaults({ ease: "power4.out" });
 
-      gsap.to(".hero-content", {
-        yPercent: -9,
-        opacity: 0.16,
-        ease: "none",
-        scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true },
-      });
-
-      gsap.utils.toArray<HTMLElement>(".reveal-line").forEach((line) => {
-        gsap.fromTo(
-          line,
-          { yPercent: 110, opacity: 0.02, rotateX: 7 },
+      const heroTl = gsap.timeline({ delay: 0.04 });
+      heroTl
+        .fromTo(
+          ".hero-kicker",
+          { y: 14, opacity: 0, filter: "blur(6px)" },
+          { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.55 }
+        )
+        .fromTo(
+          ".hero-title .line",
+          { yPercent: 115, opacity: 0, rotateX: 10, filter: "blur(8px)" },
           {
             yPercent: 0,
             opacity: 1,
             rotateX: 0,
+            filter: "blur(0px)",
             duration: 0.82,
-            ease: "power4.out",
-            scrollTrigger: { trigger: line, start: "top 90%", once: true },
+            stagger: 0.08,
+          },
+          "-=0.28"
+        )
+        .fromTo(
+          ".hero-meta, .scroll-cue",
+          { y: 10, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.42, stagger: 0.06 },
+          "-=0.34"
+        );
+
+      gsap.to(".hero-title .line:first-child", {
+        xPercent: -4,
+        yPercent: -8,
+        opacity: 0.2,
+        ease: "none",
+        scrollTrigger: {
+          trigger: ".hero",
+          start: "top top",
+          end: "bottom top",
+          scrub: true,
+        },
+      });
+
+      gsap.to(".hero-title .line:last-child", {
+        xPercent: 4,
+        yPercent: -3,
+        opacity: 0.2,
+        ease: "none",
+        scrollTrigger: {
+          trigger: ".hero",
+          start: "top top",
+          end: "bottom top",
+          scrub: true,
+        },
+      });
+
+      gsap.to(".mist-canvas", {
+        scale: 1.06,
+        opacity: 0.68,
+        transformOrigin: "50% 50%",
+        ease: "none",
+        scrollTrigger: {
+          trigger: ".hero",
+          start: "top top",
+          end: "bottom top",
+          scrub: true,
+        },
+      });
+
+      gsap.utils.toArray<HTMLElement>(".edge-label").forEach((label) => {
+        gsap.fromTo(
+          label,
+          { opacity: 0, y: 18 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.6,
+            scrollTrigger: { trigger: label.parentElement, start: "top 82%", once: true },
+          }
+        );
+      });
+
+      gsap.utils.toArray<HTMLElement>(".line-mask").forEach((mask) => {
+        const line = mask.querySelector<HTMLElement>(".reveal-line");
+        if (!line) return;
+
+        gsap.fromTo(
+          line,
+          { yPercent: 118, rotateX: 8, opacity: 0.05, filter: "blur(5px)" },
+          {
+            yPercent: 0,
+            rotateX: 0,
+            opacity: 1,
+            filter: "blur(0px)",
+            duration: 0.78,
+            scrollTrigger: {
+              trigger: mask,
+              start: "top 88%",
+              once: true,
+            },
           }
         );
       });
@@ -194,28 +269,67 @@ export default function Home() {
       gsap.utils.toArray<HTMLElement>(".fade-up").forEach((item) => {
         gsap.fromTo(
           item,
-          { y: 28, opacity: 0 },
+          { y: 22, opacity: 0, filter: "blur(4px)" },
           {
             y: 0,
             opacity: 1,
-            duration: 0.72,
-            ease: "power3.out",
-            scrollTrigger: { trigger: item, start: "top 90%", once: true },
+            filter: "blur(0px)",
+            duration: 0.62,
+            scrollTrigger: {
+              trigger: item,
+              start: "top 90%",
+              once: true,
+            },
           }
         );
       });
 
       gsap.utils.toArray<HTMLElement>(".media-shell").forEach((shell) => {
-        const inner = shell.querySelector(".media-inner");
+        if (shell.classList.contains("project-media")) return;
+
+        const inner = shell.querySelector<HTMLElement>(".media-inner");
         if (!inner) return;
+
+        gsap.set(shell, { clipPath: "inset(0 0 100% 0)" });
+        gsap.set(inner, { scale: 1.085, yPercent: 3 });
+
+        const reveal = gsap.timeline({
+          scrollTrigger: {
+            trigger: shell,
+            start: "top 88%",
+            once: true,
+          },
+        });
+
+        reveal
+          .to(shell, {
+            clipPath: "inset(0 0 0% 0)",
+            duration: 0.92,
+            ease: "power4.inOut",
+          })
+          .to(
+            inner,
+            {
+              scale: 1,
+              yPercent: 0,
+              duration: 1.05,
+              ease: "power3.out",
+            },
+            0.08
+          );
+
         gsap.fromTo(
           inner,
-          { yPercent: -4.5, scale: 1.045 },
+          { yPercent: -2.5 },
           {
-            yPercent: 4.5,
-            scale: 1.01,
+            yPercent: 2.5,
             ease: "none",
-            scrollTrigger: { trigger: shell, start: "top bottom", end: "bottom top", scrub: true },
+            scrollTrigger: {
+              trigger: shell,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: true,
+            },
           }
         );
       });
@@ -223,7 +337,7 @@ export default function Home() {
       gsap.utils.toArray<HTMLElement>(".state-copy").forEach((state, index) => {
         ScrollTrigger.create({
           trigger: state,
-          start: "top 56%",
+          start: "top 58%",
           end: "bottom 42%",
           onEnter: () => setActiveState(index),
           onEnterBack: () => setActiveState(index),
@@ -231,45 +345,132 @@ export default function Home() {
       });
 
       gsap.utils.toArray<HTMLElement>(".project").forEach((project) => {
-        const media = project.querySelector(".project-media");
-        const copy = project.querySelector(".project-copy");
+        const media = project.querySelector<HTMLElement>(".project-media");
+        const inner = project.querySelector<HTMLElement>(".project-media .media-inner");
+        const eyebrow = project.querySelector<HTMLElement>(".project-eyebrow");
+        const heading = project.querySelector<HTMLElement>(".project-copy h3");
+        const body = project.querySelector<HTMLElement>(".project-copy p");
+        const link = project.querySelector<HTMLElement>(".rolling-link");
+        const number = project.querySelector<HTMLElement>(".project-number");
+        const fromRight = project.classList.contains("project--right");
 
-        if (media) {
-          gsap.fromTo(
-            media,
-            { clipPath: "inset(14% 0 14% 0)", scale: 0.985 },
-            {
-              clipPath: "inset(0% 0 0% 0)",
-              scale: 1,
-              duration: 0.96,
-              ease: "power4.out",
-              scrollTrigger: { trigger: project, start: "top 84%", once: true },
-            }
-          );
+        if (media && inner) {
+          gsap.set(media, {
+            clipPath: fromRight ? "inset(0 0 0 100%)" : "inset(0 100% 0 0)",
+          });
+          gsap.set(inner, {
+            scale: 1.1,
+            xPercent: fromRight ? -3 : 3,
+          });
+
+          const mediaTl = gsap.timeline({
+            scrollTrigger: {
+              trigger: project,
+              start: "top 82%",
+              once: true,
+            },
+          });
+
+          mediaTl
+            .to(media, {
+              clipPath: "inset(0 0% 0 0%)",
+              duration: 0.9,
+              ease: "power4.inOut",
+            })
+            .to(
+              inner,
+              {
+                scale: 1,
+                xPercent: 0,
+                duration: 1.05,
+                ease: "power3.out",
+              },
+              0.06
+            );
+
+          gsap.to(inner, {
+            yPercent: fromRight ? 3.5 : -3.5,
+            ease: "none",
+            scrollTrigger: {
+              trigger: project,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: true,
+            },
+          });
         }
 
-        if (copy) {
+        const copyTargets = [eyebrow, heading, body, link].filter(Boolean);
+        gsap.fromTo(
+          copyTargets,
+          {
+            y: 28,
+            opacity: 0,
+            filter: "blur(5px)",
+            clipPath: "inset(0 0 18% 0)",
+          },
+          {
+            y: 0,
+            opacity: 1,
+            filter: "blur(0px)",
+            clipPath: "inset(0 0 0% 0)",
+            duration: 0.66,
+            stagger: 0.08,
+            scrollTrigger: {
+              trigger: project,
+              start: "top 78%",
+              once: true,
+            },
+          }
+        );
+
+        if (number) {
           gsap.fromTo(
-            copy,
-            { y: 42, opacity: 0 },
+            number,
+            { opacity: 0, x: fromRight ? -14 : 14 },
             {
-              y: 0,
               opacity: 1,
-              duration: 0.78,
-              ease: "power4.out",
-              scrollTrigger: { trigger: project, start: "top 82%", once: true },
+              x: 0,
+              duration: 0.55,
+              scrollTrigger: {
+                trigger: project,
+                start: "top 82%",
+                once: true,
+              },
             }
           );
         }
       });
 
       gsap.fromTo(
-        ".final-image .media-inner",
-        { scale: 1.06 },
+        ".journal-inner",
+        { y: 48, opacity: 0, scale: 0.985 },
         {
-          scale: 1.01,
-          ease: "none",
-          scrollTrigger: { trigger: ".final-image", start: "top bottom", end: "bottom top", scrub: true },
+          y: 0,
+          opacity: 1,
+          scale: 1,
+          duration: 0.9,
+          scrollTrigger: {
+            trigger: ".journal",
+            start: "top 74%",
+            once: true,
+          },
+        }
+      );
+
+      gsap.fromTo(
+        ".footer h2, .footer-contact, .footer-nav, .footer-studio",
+        { y: 28, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.7,
+          stagger: 0.07,
+          scrollTrigger: {
+            trigger: ".footer",
+            start: "top 84%",
+            once: true,
+          },
         }
       );
     }, rootRef);
@@ -325,6 +526,42 @@ export default function Home() {
       document.removeEventListener("mouseover", over);
       document.removeEventListener("mouseout", out);
     };
+  }, []);
+
+  useEffect(() => {
+    const finePointer = window.matchMedia("(pointer: fine)").matches;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!finePointer || reduced) return;
+
+    const elements = Array.from(document.querySelectorAll<HTMLElement>(".magnetic"));
+    const cleanups: Array<() => void> = [];
+
+    elements.forEach((element) => {
+      const xTo = gsap.quickTo(element, "x", { duration: 0.32, ease: "power3.out" });
+      const yTo = gsap.quickTo(element, "y", { duration: 0.32, ease: "power3.out" });
+
+      const move = (event: MouseEvent) => {
+        const rect = element.getBoundingClientRect();
+        const dx = event.clientX - (rect.left + rect.width / 2);
+        const dy = event.clientY - (rect.top + rect.height / 2);
+        xTo(dx * 0.14);
+        yTo(dy * 0.14);
+      };
+
+      const leave = () => {
+        xTo(0);
+        yTo(0);
+      };
+
+      element.addEventListener("mousemove", move);
+      element.addEventListener("mouseleave", leave);
+      cleanups.push(() => {
+        element.removeEventListener("mousemove", move);
+        element.removeEventListener("mouseleave", leave);
+      });
+    });
+
+    return () => cleanups.forEach((cleanup) => cleanup());
   }, []);
 
   return (
@@ -450,7 +687,7 @@ export default function Home() {
 
           <div className="state-list">
             {states.map((state, index) => (
-              <article className="state-copy" key={state.title}>
+              <article className={activeState === index ? "state-copy is-active" : "state-copy"} key={state.title}>
                 <span className="state-number">{state.index}</span>
                 <h3>{state.title}</h3>
                 <p>{state.text}</p>
