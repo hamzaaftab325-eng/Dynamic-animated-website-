@@ -5,6 +5,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 import MistCanvas from "../components/MistCanvas";
+import FluidField from "../components/FluidField";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -566,6 +567,7 @@ export default function Home() {
 
   return (
     <main ref={rootRef} className={loaded ? "site is-loaded" : "site"}>
+      <FluidField />
       <div className="cursor" aria-hidden="true"><span>VIEW</span></div>
       <div className="cursor-dot" aria-hidden="true" />
 
