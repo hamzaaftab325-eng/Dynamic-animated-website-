@@ -7,7 +7,9 @@ import Lenis from "lenis";
 import MistCanvas from "../components/MistCanvas";
 import FluidField from "../components/FluidField";
 
-gsap.registerPlugin(ScrollTrigger);
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 const IMAGES = {
   forest:
@@ -16,69 +18,65 @@ const IMAGES = {
     "https://images.unsplash.com/photo-1549693578-d683be217e58?auto=format&fit=crop&q=88&w=2400",
   interior:
     "https://images.unsplash.com/photo-1600607688969-a5bfcd646154?auto=format&fit=crop&q=88&w=2400",
+  architecture:
+    "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&q=88&w=2400",
   stone:
     "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&q=88&w=2400",
   light:
     "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&q=88&w=2400",
 };
 
-const states = [
-  { index: "01", title: "Material", text: "Honest surfaces, softened by time.", image: IMAGES.stone },
-  { index: "02", title: "Light", text: "Shadow gives form its meaning.", image: IMAGES.light },
-  { index: "03", title: "Rhythm", text: "Space is composed through pause.", image: IMAGES.interior },
-];
-
-const projects = [
+const STATES = [
   {
     index: "01",
-    eyebrow: "OBJECT / STONE",
-    title: "Stone Vessel",
-    text: "Weight made quiet. A study in restraint, surface and the imperfect edge.",
+    title: "Material",
+    text: "Honest surfaces carry time. We work with texture, grain and weight rather than decoration.",
     image: IMAGES.stone,
-    align: "left",
   },
   {
     index: "02",
-    eyebrow: "OBJECT / LIGHT",
-    title: "Paper Light",
-    text: "A glow shaped by shadow. Soft illumination that never asks for attention.",
+    title: "Light",
+    text: "Shadow gives form its meaning. Light is treated as a material that edits what the eye can hold.",
     image: IMAGES.light,
-    align: "right",
   },
   {
     index: "03",
-    eyebrow: "OBJECT / CEDAR",
-    title: "Cedar Bench",
-    text: "A place to pause. Proportion, grain and silence composed as one gesture.",
-    image: IMAGES.house,
-    align: "left",
+    title: "Rhythm",
+    text: "Space becomes memorable through pause: compression, release, stillness and movement.",
+    image: IMAGES.interior,
   },
 ];
 
-function RollingLink({ children, href = "#" }: { children: string; href?: string }) {
-  return (
-    <a className="rolling-link magnetic" href={href}>
-      <span className="rolling-window">
-        <span className="rolling-track">
-          <span>{children}</span>
-          <span aria-hidden="true">{children}</span>
-        </span>
-      </span>
-      <span className="link-mark" aria-hidden="true">↗</span>
-    </a>
-  );
-}
+const PROJECTS = [
+  {
+    index: "01",
+    title: "Stone Vessel",
+    note: "Weight made quiet.",
+    meta: "OBJECT / 2026",
+    image: IMAGES.stone,
+  },
+  {
+    index: "02",
+    title: "Paper Light",
+    note: "A glow shaped by shadow.",
+    meta: "LIGHT / 2026",
+    image: IMAGES.light,
+  },
+  {
+    index: "03",
+    title: "Cedar Bench",
+    note: "A place to pause.",
+    meta: "FURNITURE / 2026",
+    image: IMAGES.house,
+  },
+];
 
-function EdgeLabel({ children }: { children: React.ReactNode }) {
-  return <div className="edge-label">{children}</div>;
-}
-
-function LiveClock({ zone, label }: { zone: string; label: string }) {
-  const [value, setValue] = useState("--:--:--");
+function Clock({ zone, label }: { zone: string; label: string }) {
+  const [time, setTime] = useState("--:--:--");
 
   useEffect(() => {
-    const update = () => {
-      setValue(
+    const update = () =>
+      setTime(
         new Intl.DateTimeFormat("en-GB", {
           timeZone: zone,
           hour: "2-digit",
@@ -87,46 +85,65 @@ function LiveClock({ zone, label }: { zone: string; label: string }) {
           hour12: false,
         }).format(new Date())
       );
-    };
+
     update();
-    const timer = window.setInterval(update, 1000);
-    return () => window.clearInterval(timer);
+    const id = window.setInterval(update, 1000);
+    return () => window.clearInterval(id);
   }, [zone]);
 
   return (
     <div className="clock">
       <span>{label}</span>
-      <time>{value}</time>
+      <time>{time}</time>
     </div>
+  );
+}
+
+function EdgeLabel({ children }: { children: React.ReactNode }) {
+  return <span className="edge-label">{children}</span>;
+}
+
+function ArrowLink({ children, href = "#" }: { children: string; href?: string }) {
+  return (
+    <a href={href} className="arrow-link magnetic">
+      <span className="arrow-link__mask">
+        <span className="arrow-link__track">
+          <span>{children}</span>
+          <span aria-hidden="true">{children}</span>
+        </span>
+      </span>
+      <span className="arrow-link__icon">↗</span>
+    </a>
   );
 }
 
 export default function Home() {
   const rootRef = useRef<HTMLElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [progress, setProgress] = useState(0);
   const [loaded, setLoaded] = useState(false);
+  const [progress, setProgress] = useState(0);
   const [activeState, setActiveState] = useState(0);
 
   const menuItems = useMemo(
-    () => ["Home", "Philosophy", "Objects", "Spaces", "Journal", "Studio", "Contact"],
+    () => ["Home", "Philosophy", "States", "Objects", "Studio", "Contact"],
     []
   );
 
   useEffect(() => {
-    let current = 0;
-    const timer = window.setInterval(() => {
-      current += Math.max(2, Math.round((100 - current) * 0.2));
-      if (current >= 100) {
-        current = 100;
+    let value = 0;
+    const id = window.setInterval(() => {
+      value += Math.max(4, Math.ceil((100 - value) * 0.24));
+      if (value >= 100) {
+        value = 100;
         setProgress(100);
-        window.clearInterval(timer);
-        window.setTimeout(() => setLoaded(true), 160);
+        window.clearInterval(id);
+        window.setTimeout(() => setLoaded(true), 140);
       } else {
-        setProgress(current);
+        setProgress(value);
       }
-    }, 28);
-    return () => window.clearInterval(timer);
+    }, 24);
+
+    return () => window.clearInterval(id);
   }, []);
 
   useEffect(() => {
@@ -138,13 +155,15 @@ export default function Home() {
 
   useEffect(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduced) return;
+    const desktop = window.matchMedia("(min-width: 768px) and (pointer: fine)").matches;
+
+    if (reduced || !desktop) return;
 
     const lenis = new Lenis({
-      duration: 0.72,
+      duration: 0.78,
       smoothWheel: true,
       syncTouch: false,
-      wheelMultiplier: 1.0,
+      wheelMultiplier: 0.95,
     });
 
     const raf = (time: number) => lenis.raf(time * 1000);
@@ -160,43 +179,46 @@ export default function Home() {
 
   useEffect(() => {
     if (!loaded || !rootRef.current) return;
+
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduced) return;
+
+    const isDesktop = window.matchMedia("(min-width: 768px)").matches;
 
     const ctx = gsap.context(() => {
       gsap.defaults({ ease: "power4.out" });
 
-      const heroTl = gsap.timeline({ delay: 0.04 });
-      heroTl
+      const hero = gsap.timeline({ delay: 0.03 });
+      hero
         .fromTo(
-          ".hero-kicker",
-          { y: 14, opacity: 0, filter: "blur(6px)" },
+          ".hero__eyebrow",
+          { y: 16, opacity: 0, filter: "blur(6px)" },
           { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.55 }
         )
         .fromTo(
-          ".hero-title .line",
-          { yPercent: 115, opacity: 0, rotateX: 10, filter: "blur(8px)" },
+          ".hero__line-inner",
+          { yPercent: 115, rotateX: 11, opacity: 0, filter: "blur(8px)" },
           {
             yPercent: 0,
-            opacity: 1,
             rotateX: 0,
+            opacity: 1,
             filter: "blur(0px)",
-            duration: 0.82,
-            stagger: 0.08,
+            stagger: 0.075,
+            duration: 0.86,
           },
-          "-=0.28"
+          "-=0.25"
         )
         .fromTo(
-          ".hero-meta, .scroll-cue",
-          { y: 10, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.42, stagger: 0.06 },
-          "-=0.34"
+          ".hero__meta, .hero__scroll",
+          { y: 12, opacity: 0 },
+          { y: 0, opacity: 1, stagger: 0.05, duration: 0.42 },
+          "-=0.35"
         );
 
-      gsap.to(".hero-title .line:first-child", {
-        xPercent: -4,
-        yPercent: -8,
-        opacity: 0.2,
+      gsap.to(".hero__line--one", {
+        xPercent: -5,
+        yPercent: -10,
+        opacity: 0.18,
         ease: "none",
         scrollTrigger: {
           trigger: ".hero",
@@ -206,10 +228,10 @@ export default function Home() {
         },
       });
 
-      gsap.to(".hero-title .line:last-child", {
-        xPercent: 4,
-        yPercent: -3,
-        opacity: 0.2,
+      gsap.to(".hero__line--two", {
+        xPercent: 6,
+        yPercent: -4,
+        opacity: 0.18,
         ease: "none",
         scrollTrigger: {
           trigger: ".hero",
@@ -219,10 +241,9 @@ export default function Home() {
         },
       });
 
-      gsap.to(".mist-canvas", {
-        scale: 1.06,
-        opacity: 0.68,
-        transformOrigin: "50% 50%",
+      gsap.to(".hero .mist-canvas", {
+        scale: 1.08,
+        opacity: 0.62,
         ease: "none",
         scrollTrigger: {
           trigger: ".hero",
@@ -232,26 +253,13 @@ export default function Home() {
         },
       });
 
-      gsap.utils.toArray<HTMLElement>(".edge-label").forEach((label) => {
-        gsap.fromTo(
-          label,
-          { opacity: 0, y: 18 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.6,
-            scrollTrigger: { trigger: label.parentElement, start: "top 82%", once: true },
-          }
-        );
-      });
-
-      gsap.utils.toArray<HTMLElement>(".line-mask").forEach((mask) => {
-        const line = mask.querySelector<HTMLElement>(".reveal-line");
-        if (!line) return;
+      gsap.utils.toArray<HTMLElement>(".mask-line").forEach((mask) => {
+        const inner = mask.querySelector<HTMLElement>(".mask-line__inner");
+        if (!inner) return;
 
         gsap.fromTo(
-          line,
-          { yPercent: 118, rotateX: 8, opacity: 0.05, filter: "blur(5px)" },
+          inner,
+          { yPercent: 118, rotateX: 9, opacity: 0.03, filter: "blur(6px)" },
           {
             yPercent: 0,
             rotateX: 0,
@@ -267,15 +275,15 @@ export default function Home() {
         );
       });
 
-      gsap.utils.toArray<HTMLElement>(".fade-up").forEach((item) => {
+      gsap.utils.toArray<HTMLElement>(".reveal-copy").forEach((item) => {
         gsap.fromTo(
           item,
-          { y: 22, opacity: 0, filter: "blur(4px)" },
+          { y: 24, opacity: 0, filter: "blur(5px)" },
           {
             y: 0,
             opacity: 1,
             filter: "blur(0px)",
-            duration: 0.62,
+            duration: 0.64,
             scrollTrigger: {
               trigger: item,
               start: "top 90%",
@@ -285,191 +293,153 @@ export default function Home() {
         );
       });
 
-      gsap.utils.toArray<HTMLElement>(".media-shell").forEach((shell) => {
-        if (shell.classList.contains("project-media")) return;
-
-        const inner = shell.querySelector<HTMLElement>(".media-inner");
+      gsap.utils.toArray<HTMLElement>(".reveal-media").forEach((shell, index) => {
+        const inner = shell.querySelector<HTMLElement>(".reveal-media__inner");
         if (!inner) return;
 
-        gsap.set(shell, { clipPath: "inset(0 0 100% 0)" });
-        gsap.set(inner, { scale: 1.085, yPercent: 3 });
+        const fromRight = index % 2 === 1;
+        gsap.set(shell, {
+          clipPath: fromRight ? "inset(0 0 0 100%)" : "inset(0 100% 0 0)",
+        });
+        gsap.set(inner, {
+          scale: 1.09,
+          xPercent: fromRight ? -3 : 3,
+        });
 
-        const reveal = gsap.timeline({
+        const tl = gsap.timeline({
           scrollTrigger: {
             trigger: shell,
-            start: "top 88%",
+            start: "top 86%",
             once: true,
           },
         });
 
-        reveal
-          .to(shell, {
-            clipPath: "inset(0 0 0% 0)",
-            duration: 0.92,
-            ease: "power4.inOut",
-          })
-          .to(
-            inner,
-            {
-              scale: 1,
-              yPercent: 0,
-              duration: 1.05,
-              ease: "power3.out",
-            },
-            0.08
-          );
-
-        gsap.fromTo(
+        tl.to(shell, {
+          clipPath: "inset(0 0% 0 0%)",
+          duration: 0.92,
+          ease: "power4.inOut",
+        }).to(
           inner,
-          { yPercent: -2.5 },
           {
-            yPercent: 2.5,
-            ease: "none",
-            scrollTrigger: {
-              trigger: shell,
-              start: "top bottom",
-              end: "bottom top",
-              scrub: true,
-            },
-          }
+            scale: 1,
+            xPercent: 0,
+            duration: 1.05,
+            ease: "power3.out",
+          },
+          0.06
         );
+
+        gsap.to(inner, {
+          yPercent: fromRight ? 3 : -3,
+          ease: "none",
+          scrollTrigger: {
+            trigger: shell,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: true,
+          },
+        });
       });
 
-      gsap.utils.toArray<HTMLElement>(".state-copy").forEach((state, index) => {
+      gsap.fromTo(
+        ".manifesto__giant",
+        { xPercent: 12, opacity: 0.03 },
+        {
+          xPercent: -6,
+          opacity: 0.13,
+          ease: "none",
+          scrollTrigger: {
+            trigger: ".manifesto",
+            start: "top bottom",
+            end: "bottom top",
+            scrub: true,
+          },
+        }
+      );
+
+      gsap.to(".interlude__image", {
+        scale: 1.02,
+        yPercent: -4,
+        ease: "none",
+        scrollTrigger: {
+          trigger: ".interlude",
+          start: "top bottom",
+          end: "bottom top",
+          scrub: true,
+        },
+      });
+
+      gsap.utils.toArray<HTMLElement>(".state-copy").forEach((item, index) => {
         ScrollTrigger.create({
-          trigger: state,
-          start: "top 58%",
-          end: "bottom 42%",
+          trigger: item,
+          start: "top 57%",
+          end: "bottom 43%",
           onEnter: () => setActiveState(index),
           onEnterBack: () => setActiveState(index),
         });
       });
 
-      gsap.utils.toArray<HTMLElement>(".project").forEach((project) => {
-        const media = project.querySelector<HTMLElement>(".project-media");
-        const inner = project.querySelector<HTMLElement>(".project-media .media-inner");
-        const eyebrow = project.querySelector<HTMLElement>(".project-eyebrow");
-        const heading = project.querySelector<HTMLElement>(".project-copy h3");
-        const body = project.querySelector<HTMLElement>(".project-copy p");
-        const link = project.querySelector<HTMLElement>(".rolling-link");
-        const number = project.querySelector<HTMLElement>(".project-number");
-        const fromRight = project.classList.contains("project--right");
+      if (isDesktop) {
+        const track = document.querySelector<HTMLElement>(".objects__track");
+        const pin = document.querySelector<HTMLElement>(".objects__pin");
 
-        if (media && inner) {
-          gsap.set(media, {
-            clipPath: fromRight ? "inset(0 0 0 100%)" : "inset(0 100% 0 0)",
-          });
-          gsap.set(inner, {
-            scale: 1.1,
-            xPercent: fromRight ? -3 : 3,
-          });
+        if (track && pin) {
+          const distance = () => Math.max(0, track.scrollWidth - window.innerWidth);
 
-          const mediaTl = gsap.timeline({
-            scrollTrigger: {
-              trigger: project,
-              start: "top 82%",
-              once: true,
-            },
-          });
-
-          mediaTl
-            .to(media, {
-              clipPath: "inset(0 0% 0 0%)",
-              duration: 0.9,
-              ease: "power4.inOut",
-            })
-            .to(
-              inner,
-              {
-                scale: 1,
-                xPercent: 0,
-                duration: 1.05,
-                ease: "power3.out",
-              },
-              0.06
-            );
-
-          gsap.to(inner, {
-            yPercent: fromRight ? 3.5 : -3.5,
+          gsap.to(track, {
+            x: () => -distance(),
             ease: "none",
             scrollTrigger: {
-              trigger: project,
-              start: "top bottom",
-              end: "bottom top",
-              scrub: true,
+              trigger: pin,
+              start: "top top",
+              end: () => "+=" + Math.max(window.innerHeight * 2.7, distance() * 1.08),
+              scrub: 0.55,
+              pin: true,
+              anticipatePin: 1,
+              invalidateOnRefresh: true,
             },
           });
         }
-
-        const copyTargets = [eyebrow, heading, body, link].filter(Boolean);
-        gsap.fromTo(
-          copyTargets,
-          {
-            y: 28,
-            opacity: 0,
-            filter: "blur(5px)",
-            clipPath: "inset(0 0 18% 0)",
-          },
-          {
-            y: 0,
-            opacity: 1,
-            filter: "blur(0px)",
-            clipPath: "inset(0 0 0% 0)",
-            duration: 0.66,
-            stagger: 0.08,
-            scrollTrigger: {
-              trigger: project,
-              start: "top 78%",
-              once: true,
-            },
-          }
-        );
-
-        if (number) {
-          gsap.fromTo(
-            number,
-            { opacity: 0, x: fromRight ? -14 : 14 },
-            {
-              opacity: 1,
-              x: 0,
-              duration: 0.55,
-              scrollTrigger: {
-                trigger: project,
-                start: "top 82%",
-                once: true,
-              },
-            }
-          );
-        }
-      });
+      }
 
       gsap.fromTo(
-        ".journal-inner",
-        { y: 48, opacity: 0, scale: 0.985 },
+        ".studio__image",
+        { clipPath: "inset(8% 12% 8% 12%)", scale: 1.06 },
         {
-          y: 0,
-          opacity: 1,
+          clipPath: "inset(0% 0% 0% 0%)",
           scale: 1,
-          duration: 0.9,
+          duration: 1.0,
+          ease: "power4.inOut",
           scrollTrigger: {
-            trigger: ".journal",
-            start: "top 74%",
+            trigger: ".studio",
+            start: "top 72%",
             once: true,
           },
         }
       );
 
+      gsap.to(".closing__image", {
+        scale: 1.01,
+        yPercent: -3,
+        ease: "none",
+        scrollTrigger: {
+          trigger: ".closing",
+          start: "top bottom",
+          end: "bottom top",
+          scrub: true,
+        },
+      });
+
       gsap.fromTo(
-        ".footer h2, .footer-contact, .footer-nav, .footer-studio",
-        { y: 28, opacity: 0 },
+        ".footer__wordmark span",
+        { yPercent: 115 },
         {
-          y: 0,
-          opacity: 1,
-          duration: 0.7,
-          stagger: 0.07,
+          yPercent: 0,
+          duration: 0.95,
+          stagger: 0.035,
           scrollTrigger: {
             trigger: ".footer",
-            start: "top 84%",
+            start: "top 80%",
             once: true,
           },
         }
@@ -480,15 +450,16 @@ export default function Home() {
   }, [loaded]);
 
   useEffect(() => {
-    const finePointer = window.matchMedia("(pointer: fine)").matches;
-    if (!finePointer) return;
+    const fine = window.matchMedia("(pointer: fine)").matches;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!fine || reduced) return;
 
     const cursor = document.querySelector<HTMLElement>(".cursor");
     const dot = document.querySelector<HTMLElement>(".cursor-dot");
     if (!cursor || !dot) return;
 
-    let x = innerWidth / 2;
-    let y = innerHeight / 2;
+    let x = window.innerWidth / 2;
+    let y = window.innerHeight / 2;
     let tx = x;
     let ty = y;
     let frame = 0;
@@ -499,47 +470,51 @@ export default function Home() {
       dot.style.transform = `translate3d(${tx}px,${ty}px,0)`;
     };
 
-    const animate = () => {
-      x += (tx - x) * 0.2;
-      y += (ty - y) * 0.2;
+    const tick = () => {
+      x += (tx - x) * 0.22;
+      y += (ty - y) * 0.22;
       cursor.style.transform = `translate3d(${x}px,${y}px,0)`;
-      frame = requestAnimationFrame(animate);
+      frame = requestAnimationFrame(tick);
     };
 
     const over = (event: Event) => {
       const target = event.target as HTMLElement;
-      if (target.closest(".magnetic, .project-media, .menu-button")) cursor.classList.add("is-active");
+      if (target.closest(".project-card, .magnetic, .menu-button")) {
+        cursor.classList.add("is-active");
+      }
     };
 
     const out = (event: Event) => {
       const target = event.target as HTMLElement;
-      if (target.closest(".magnetic, .project-media, .menu-button")) cursor.classList.remove("is-active");
+      if (target.closest(".project-card, .magnetic, .menu-button")) {
+        cursor.classList.remove("is-active");
+      }
     };
 
-    addEventListener("mousemove", move, { passive: true });
+    window.addEventListener("mousemove", move, { passive: true });
     document.addEventListener("mouseover", over);
     document.addEventListener("mouseout", out);
-    frame = requestAnimationFrame(animate);
+    frame = requestAnimationFrame(tick);
 
     return () => {
       cancelAnimationFrame(frame);
-      removeEventListener("mousemove", move);
+      window.removeEventListener("mousemove", move);
       document.removeEventListener("mouseover", over);
       document.removeEventListener("mouseout", out);
     };
   }, []);
 
   useEffect(() => {
-    const finePointer = window.matchMedia("(pointer: fine)").matches;
+    const fine = window.matchMedia("(pointer: fine)").matches;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (!finePointer || reduced) return;
+    if (!fine || reduced) return;
 
     const elements = Array.from(document.querySelectorAll<HTMLElement>(".magnetic"));
-    const cleanups: Array<() => void> = [];
+    const cleanup: Array<() => void> = [];
 
     elements.forEach((element) => {
-      const xTo = gsap.quickTo(element, "x", { duration: 0.32, ease: "power3.out" });
-      const yTo = gsap.quickTo(element, "y", { duration: 0.32, ease: "power3.out" });
+      const xTo = gsap.quickTo(element, "x", { duration: 0.3, ease: "power3.out" });
+      const yTo = gsap.quickTo(element, "y", { duration: 0.3, ease: "power3.out" });
 
       const move = (event: MouseEvent) => {
         const rect = element.getBoundingClientRect();
@@ -556,144 +531,215 @@ export default function Home() {
 
       element.addEventListener("mousemove", move);
       element.addEventListener("mouseleave", leave);
-      cleanups.push(() => {
+
+      cleanup.push(() => {
         element.removeEventListener("mousemove", move);
         element.removeEventListener("mouseleave", leave);
       });
     });
 
-    return () => cleanups.forEach((cleanup) => cleanup());
+    return () => cleanup.forEach((fn) => fn());
   }, []);
 
   return (
     <main ref={rootRef} className={loaded ? "site is-loaded" : "site"}>
       <FluidField />
-      <div className="cursor" aria-hidden="true"><span>VIEW</span></div>
+
+      <div className="cursor" aria-hidden="true">
+        <span>VIEW</span>
+      </div>
       <div className="cursor-dot" aria-hidden="true" />
 
       <div className={loaded ? "loader loader--done" : "loader"} aria-hidden={loaded}>
-        <div className="loader-brand">KASUMI</div>
-        <div className="loader-count">{String(progress).padStart(3, "0")}</div>
-        <div className="loader-rule"><span style={{ transform: `scaleX(${progress / 100})` }} /></div>
+        <div className="loader__brand">KASUMI / 霞</div>
+        <div className="loader__count">{String(progress).padStart(3, "0")}</div>
+        <div className="loader__line">
+          <span style={{ transform: `scaleX(${progress / 100})` }} />
+        </div>
       </div>
 
-      <header className="site-header">
-        <a href="#top" className="wordmark magnetic" aria-label="Kasumi home">
-          <span className="seal">霞</span>
+      <header className="header">
+        <a href="#home" className="brand magnetic" aria-label="Kasumi home">
+          <span className="brand__seal">霞</span>
           <span>KASUMI</span>
         </a>
-        <div className="lang">EN / JP</div>
+
+        <span className="header__edition">TOKYO / CPH · 2026</span>
+
         <button
           type="button"
           className="menu-button magnetic"
+          onClick={() => setMenuOpen((value) => !value)}
           aria-label={menuOpen ? "Close menu" : "Open menu"}
-          onClick={() => setMenuOpen((open) => !open)}
         >
           <span>{menuOpen ? "CLOSE" : "MENU"}</span>
-          <i className={menuOpen ? "menu-icon open" : "menu-icon"} />
+          <i className={menuOpen ? "menu-button__icon is-open" : "menu-button__icon"} />
         </button>
       </header>
 
-      <div className={menuOpen ? "menu-overlay open" : "menu-overlay"} aria-hidden={!menuOpen}>
-        <div className="menu-atmosphere" />
-        <nav className="menu-nav">
+      <div className={menuOpen ? "menu is-open" : "menu"} aria-hidden={!menuOpen}>
+        <div className="menu__veil" />
+        <nav className="menu__nav">
           {menuItems.map((item, index) => (
             <a
-              href={item === "Home" ? "#top" : "#" + item.toLowerCase()}
               key={item}
+              href={item === "Home" ? "#home" : "#" + item.toLowerCase()}
               onClick={() => setMenuOpen(false)}
             >
-              <span className="menu-index">{String(index + 1).padStart(2, "0")}</span>
-              <span className="menu-word">{item}</span>
+              <span>{String(index + 1).padStart(2, "0")}</span>
+              <strong>{item}</strong>
             </a>
           ))}
         </nav>
-        <div className="menu-meta">
-          <div><span>STUDIO</span><p>Tokyo / Copenhagen</p></div>
-          <div><span>CONTACT</span><p>hello@kasumi.studio</p></div>
+        <div className="menu__footer">
+          <div>
+            <span>STUDIO</span>
+            <p>Tokyo / Copenhagen</p>
+          </div>
+          <div>
+            <span>CONTACT</span>
+            <p>hello@kasumi.studio</p>
+          </div>
         </div>
       </div>
 
-      <section className="hero" id="top">
+      <section className="hero" id="home">
         <MistCanvas />
-        <div className="hero-noise" />
-        <div className="hero-content">
-          <p className="hero-kicker">A study in material, light, and stillness.</p>
-          <h1 className="hero-title">
-            <span className="line">Quiet forms.</span>
-            <span className="line italic">Living spaces.</span>
+        <div className="hero__grain" />
+
+        <div className="hero__center">
+          <p className="hero__eyebrow">A STUDY IN MATERIAL, LIGHT & STILLNESS</p>
+
+          <h1 className="hero__title">
+            <span className="hero__line">
+              <span className="hero__line-inner hero__line--one">Quiet forms.</span>
+            </span>
+            <span className="hero__line">
+              <span className="hero__line-inner hero__line--two">Living spaces.</span>
+            </span>
           </h1>
         </div>
-        <div className="hero-meta">
-          <LiveClock zone="Asia/Tokyo" label="TOKYO" />
-          <LiveClock zone="Europe/Copenhagen" label="COPENHAGEN" />
+
+        <div className="hero__meta">
+          <Clock zone="Asia/Tokyo" label="TOKYO" />
+          <Clock zone="Europe/Copenhagen" label="COPENHAGEN" />
         </div>
-        <div className="scroll-cue"><span>SCROLL</span><i /></div>
+
+        <div className="hero__scroll">
+          <span>SCROLL TO ENTER</span>
+          <i />
+        </div>
       </section>
 
-      <section className="philosophy" id="philosophy">
+      <section className="manifesto" id="philosophy">
         <EdgeLabel>01 — PHILOSOPHY</EdgeLabel>
-        <div className="philosophy-intro content-grid">
-          <div className="section-kicker fade-up">MA / 間</div>
-          <h2 className="display-heading">
-            <span className="line-mask"><span className="reveal-line">Beauty appears</span></span>
-            <span className="line-mask"><span className="reveal-line">when nothing asks</span></span>
-            <span className="line-mask"><span className="reveal-line italic">for attention.</span></span>
+        <span className="manifesto__giant" aria-hidden="true">間</span>
+
+        <div className="manifesto__grid">
+          <p className="section-label reveal-copy">MA / THE SPACE BETWEEN</p>
+
+          <h2 className="display-title">
+            <span className="mask-line">
+              <span className="mask-line__inner">Beauty appears</span>
+            </span>
+            <span className="mask-line">
+              <span className="mask-line__inner">when nothing asks</span>
+            </span>
+            <span className="mask-line">
+              <span className="mask-line__inner is-italic">for attention.</span>
+            </span>
           </h2>
-          <div className="philosophy-copy fade-up">
-            <p>We believe a space becomes meaningful through what is left unsaid: the grain of timber, the temperature of stone, the soft interval between light and shadow.</p>
-            <p>KASUMI studies materials as they age, not as they arrive. We compose rooms and objects that become quieter with use.</p>
+
+          <div className="manifesto__body reveal-copy">
+            <p>
+              We work with what time reveals: grain, shadow, patina, quiet proportion and
+              the interval between objects.
+            </p>
+            <p>
+              KASUMI is an imagined studio for interiors, objects and digital experiences
+              that become softer the longer you stay with them.
+            </p>
           </div>
         </div>
 
-        <div className="philosophy-media">
-          <figure className="media-shell wide-media">
-            <div className="media-inner"><img src={IMAGES.forest} alt="Misted forest" /></div>
+        <div className="manifesto__media">
+          <figure className="reveal-media manifesto__landscape">
+            <div className="reveal-media__inner">
+              <img src={IMAGES.forest} alt="Misted forest landscape" />
+            </div>
           </figure>
-          <figure className="media-shell portrait-media">
-            <div className="media-inner"><img src={IMAGES.interior} alt="Quiet interior detail" /></div>
-            <figcaption>Light held inside timber.</figcaption>
+
+          <figure className="reveal-media manifesto__portrait">
+            <div className="reveal-media__inner">
+              <img src={IMAGES.architecture} alt="Minimal architectural interior" />
+            </div>
+            <figcaption>Light held inside material.</figcaption>
           </figure>
         </div>
+      </section>
 
-        <div className="philosophy-quote content-grid">
-          <p className="quote-mark fade-up">“</p>
+      <section className="interlude">
+        <img className="interlude__image" src={IMAGES.house} alt="Quiet architecture at dusk" />
+        <div className="interlude__shade" />
+        <div className="interlude__copy">
+          <span className="section-label reveal-copy">A NOTE ON QUIET</span>
           <blockquote>
-            <span className="line-mask"><span className="reveal-line">The most enduring gestures</span></span>
-            <span className="line-mask"><span className="reveal-line">are often the least visible.</span></span>
+            <span className="mask-line">
+              <span className="mask-line__inner">What remains after</span>
+            </span>
+            <span className="mask-line">
+              <span className="mask-line__inner is-italic">the noise disappears?</span>
+            </span>
           </blockquote>
         </div>
       </section>
 
-      <section className="states" id="spaces">
-        <EdgeLabel>02 — STATES</EdgeLabel>
-        <div className="states-heading content-grid">
-          <p className="section-kicker fade-up">THREE STATES OF QUIET</p>
-          <h2 className="medium-heading">
-            <span className="line-mask"><span className="reveal-line">Material. Light. Rhythm.</span></span>
+      <section className="states" id="states">
+        <EdgeLabel>02 — THREE STATES</EdgeLabel>
+
+        <div className="states__intro">
+          <p className="section-label reveal-copy">MATERIAL / LIGHT / RHYTHM</p>
+          <h2>
+            <span className="mask-line">
+              <span className="mask-line__inner">Three conditions.</span>
+            </span>
+            <span className="mask-line">
+              <span className="mask-line__inner is-italic">One atmosphere.</span>
+            </span>
           </h2>
         </div>
 
-        <div className="states-layout">
-          <div className="state-visual-wrap">
-            <div className="state-visual">
-              {states.map((state, index) => (
-                <div key={state.title} className={activeState === index ? "state-image active" : "state-image"}>
+        <div className="states__layout">
+          <div className="states__visual-wrap">
+            <div className="states__visual">
+              {STATES.map((state, index) => (
+                <div
+                  className={activeState === index ? "state-image is-active" : "state-image"}
+                  key={state.title}
+                >
                   <img src={state.image} alt="" />
-                  <span className="state-veil" />
+                  <span className="state-image__wash" />
                 </div>
               ))}
-              <div className="state-counter"><span>{states[activeState].index}</span><i /><span>03</span></div>
+
+              <div className="states__counter">
+                <span>{STATES[activeState].index}</span>
+                <i />
+                <span>03</span>
+              </div>
             </div>
           </div>
 
-          <div className="state-list">
-            {states.map((state, index) => (
-              <article className={activeState === index ? "state-copy is-active" : "state-copy"} key={state.title}>
-                <span className="state-number">{state.index}</span>
+          <div className="states__copy">
+            {STATES.map((state, index) => (
+              <article
+                className={activeState === index ? "state-copy is-active" : "state-copy"}
+                key={state.title}
+              >
+                <span className="state-copy__index">{state.index}</span>
                 <h3>{state.title}</h3>
                 <p>{state.text}</p>
-                <span className={activeState === index ? "state-line active" : "state-line"} />
+                <span className="state-copy__line" />
               </article>
             ))}
           </div>
@@ -702,107 +748,132 @@ export default function Home() {
 
       <section className="objects" id="objects">
         <EdgeLabel>03 — OBJECTS</EdgeLabel>
-        <div className="objects-intro content-grid">
-          <p className="section-kicker fade-up">SELECTED OBJECTS / 2026</p>
-          <h2 className="display-heading compact">
-            <span className="line-mask"><span className="reveal-line">Objects for</span></span>
-            <span className="line-mask"><span className="reveal-line italic">slower living.</span></span>
-          </h2>
-          <p className="objects-copy fade-up">A collection of singular pieces built around weight, touch and measured silence.</p>
-        </div>
 
-        <div className="project-list">
-          {projects.map((project) => (
-            <article className={"project project--" + project.align} key={project.title}>
-              <div className="project-media media-shell">
-                <div className="media-inner"><img src={project.image} alt={project.title} /></div>
-                <span className="project-number">{project.index}</span>
-              </div>
-              <div className="project-copy">
-                <span className="project-eyebrow">{project.eyebrow}</span>
-                <h3>{project.title}</h3>
-                <p>{project.text}</p>
-                <RollingLink>View Object</RollingLink>
-              </div>
-            </article>
-          ))}
+        <div className="objects__pin">
+          <div className="objects__top">
+            <div>
+              <span className="section-label">SELECTED OBJECTS / 2026</span>
+              <h2>Objects for slower living.</h2>
+            </div>
+            <span className="objects__hint">SCROLL →</span>
+          </div>
+
+          <div className="objects__viewport">
+            <div className="objects__track">
+              <article className="objects__statement">
+                <span>03 / OBJECTS</span>
+                <p>
+                  Each piece begins with one question:
+                  <em> how little is enough?</em>
+                </p>
+              </article>
+
+              {PROJECTS.map((project) => (
+                <article className="project-card" key={project.title}>
+                  <figure className="project-card__image">
+                    <img src={project.image} alt={project.title} />
+                    <span className="project-card__index">{project.index}</span>
+                  </figure>
+
+                  <div className="project-card__meta">
+                    <span>{project.meta}</span>
+                    <h3>{project.title}</h3>
+                    <p>{project.note}</p>
+                    <ArrowLink>View Object</ArrowLink>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
       <section className="studio" id="studio">
         <EdgeLabel>04 — STUDIO</EdgeLabel>
-        <div className="studio-grid">
-          <div className="studio-copy">
-            <p className="section-kicker fade-up">KASUMI STUDIO</p>
-            <h2 className="display-heading compact">
-              <span className="line-mask"><span className="reveal-line">We design what remains</span></span>
-              <span className="line-mask"><span className="reveal-line italic">after the noise is gone.</span></span>
+
+        <div className="studio__grid">
+          <div className="studio__copy">
+            <span className="section-label reveal-copy">KASUMI STUDIO</span>
+            <h2>
+              <span className="mask-line">
+                <span className="mask-line__inner">We design what remains</span>
+              </span>
+              <span className="mask-line">
+                <span className="mask-line__inner is-italic">after the noise is gone.</span>
+              </span>
             </h2>
-            <p className="fade-up">A small cross-disciplinary practice shaping interiors, objects and digital experiences through material restraint.</p>
-            <div className="studio-locations fade-up">
+
+            <p className="reveal-copy">
+              A small cross-disciplinary practice shaping interiors, objects and digital
+              experiences through restraint, tactility and rhythm.
+            </p>
+
+            <div className="studio__locations reveal-copy">
               <span>35°41′N / TOKYO</span>
               <span>55°40′N / COPENHAGEN</span>
             </div>
-            <RollingLink>View Studio</RollingLink>
+
+            <ArrowLink>View Studio</ArrowLink>
           </div>
 
-          <figure className="media-shell studio-media">
-            <div className="media-inner"><img src={IMAGES.house} alt="Quiet house in a dark natural setting" /></div>
+          <figure className="studio__image">
+            <img src={IMAGES.interior} alt="Warm minimal interior" />
+            <figcaption>Studio study / evening light.</figcaption>
           </figure>
         </div>
       </section>
 
-      <section className="journal" id="journal">
-        <div className="journal-inner">
-          <span className="section-kicker fade-up">JOURNAL / NOTE 01</span>
-          <h2>
-            <span className="line-mask"><span className="reveal-line">On the value</span></span>
-            <span className="line-mask"><span className="reveal-line italic">of an empty room.</span></span>
-          </h2>
-          <p className="fade-up">Emptiness is not absence. It is a framework for noticing texture, temperature, sound and time.</p>
-          <RollingLink>Read Journal</RollingLink>
+      <section className="closing">
+        <img className="closing__image" src={IMAGES.light} alt="Warm architectural light" />
+        <div className="closing__shade" />
+        <div className="closing__copy">
+          <span className="section-label">END NOTE / 2026</span>
+          <p>Nothing added without reason.</p>
         </div>
-      </section>
-
-      <section className="final-image">
-        <figure className="media-shell">
-          <div className="media-inner"><img src={IMAGES.light} alt="Warm quiet interior light" /></div>
-          <figcaption>Night study — warmth held against darkness.</figcaption>
-        </figure>
       </section>
 
       <footer className="footer" id="contact">
-        <div className="footer-top">
-          <div>
-            <span className="footer-label">KASUMI / 霞</span>
-            <h2>Quiet forms.<br /><em>Living spaces.</em></h2>
+        <div className="footer__head">
+          <span className="section-label">KASUMI / 霞</span>
+          <div className="footer__wordmark" aria-label="KASUMI">
+            {"KASUMI".split("").map((letter, index) => (
+              <span key={index}>{letter}</span>
+            ))}
           </div>
-          <div className="footer-contact">
-            <span className="footer-label">INQUIRIES</span>
+        </div>
+
+        <div className="footer__body">
+          <nav>
+            <a href="#philosophy">Philosophy</a>
+            <a href="#states">States</a>
+            <a href="#objects">Objects</a>
+            <a href="#studio">Studio</a>
+          </nav>
+
+          <div className="footer__contact">
+            <span className="section-label">INQUIRIES</span>
             <a href="mailto:hello@kasumi.studio">hello@kasumi.studio</a>
           </div>
-        </div>
 
-        <div className="footer-middle">
-          <div className="footer-nav">
-            <a href="#philosophy">Philosophy</a>
-            <a href="#objects">Objects</a>
-            <a href="#spaces">Spaces</a>
-            <a href="#journal">Journal</a>
-            <a href="#studio">Studio</a>
-          </div>
-          <div className="footer-studio">
-            <div><span>STUDIO / TOKYO</span><p>2–18 Kiyosumi, Koto<br />Tokyo, Japan</p></div>
-            <div><span>STUDIO / COPENHAGEN</span><p>12 Frederiksberg Allé<br />Copenhagen, Denmark</p></div>
+          <div className="footer__locations">
+            <div>
+              <span className="section-label">TOKYO</span>
+              <p>Concept studio / Kiyosumi</p>
+            </div>
+            <div>
+              <span className="section-label">COPENHAGEN</span>
+              <p>Concept studio / Frederiksberg</p>
+            </div>
           </div>
         </div>
 
-        <div className="footer-bottom">
-          <div className="footer-clocks">
-            <LiveClock zone="Asia/Tokyo" label="TOKYO" />
-            <LiveClock zone="Europe/Copenhagen" label="COPENHAGEN" />
+        <div className="footer__base">
+          <div className="footer__clocks">
+            <Clock zone="Asia/Tokyo" label="TOKYO" />
+            <Clock zone="Europe/Copenhagen" label="COPENHAGEN" />
           </div>
-          <a href="#top" className="back-top magnetic">BACK TO TOP ↑</a>
+
+          <a href="#home" className="magnetic">BACK TO TOP ↑</a>
           <span>© 2026 KASUMI</span>
         </div>
       </footer>
