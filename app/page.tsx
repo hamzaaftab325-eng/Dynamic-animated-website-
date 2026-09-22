@@ -13,7 +13,7 @@ if (typeof window !== "undefined") {
 
 const IMAGES = {
   hero:
-    "https://commons.wikimedia.org/wiki/Special:Redirect/file/Mist-covered_trees_in_a_silent_forest_(55012037214).jpg",
+    "https://images.unsplash.com/photo-1773916543957-d370611ac764?auto=format&fit=crop&q=88&w=2600",
   garden:
     "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&q=90&w=1800",
   water:
