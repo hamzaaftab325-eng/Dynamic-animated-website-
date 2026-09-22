@@ -1,0 +1,51 @@
+name: Sync IZANAMI reference assets
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/sync-reference-assets.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download supplied reference assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p public
+
+          curl -L --fail --retry 3             "https://izanami-official.com/assets/img/home_fv_img.webp"             -o public/home_fv_img.webp
+
+          curl -L --fail --retry 3             "https://izanami-official.com/assets/img/home_projects_img.webp"             -o public/home_projects_img.webp
+
+          curl -L --fail --retry 3             "https://izanami-official.com/assets/img/home_company_img.webp"             -o public/home_company_img.webp
+
+          curl -L --fail --retry 3             "https://izanami-official.com/assets/img/common_fv_cloud01.webp"             -o public/common_fv_cloud01.webp
+
+          curl -L --fail --retry 3             "https://izanami-official.com/assets/img/common_fv_cloud02.webp"             -o public/common_fv_cloud02.webp
+
+          file public/*.webp
+
+      - name: Commit assets
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/home_fv_img.webp                   public/home_projects_img.webp                   public/home_company_img.webp                   public/common_fv_cloud01.webp                   public/common_fv_cloud02.webp
+
+          if git diff --cached --quiet; then
+            echo "Assets are already current."
+            exit 0
+          fi
+
+          git commit -m "Add supplied IZANAMI reference assets"
+          git push
