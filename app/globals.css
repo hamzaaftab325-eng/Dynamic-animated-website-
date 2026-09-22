@@ -1504,3 +1504,105 @@ img {
     font-style: normal;
   }
 }
+
+
+/* Global fluid atmosphere */
+.fluid-field {
+  position: fixed;
+  inset: 0;
+  z-index: 105;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: .62;
+  mix-blend-mode: soft-light;
+  isolation: isolate;
+}
+
+.fluid-field canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.site-header,
+.menu-overlay,
+.cursor,
+.cursor-dot,
+.loader {
+  position: fixed;
+}
+
+.site-header {
+  z-index: 120;
+}
+
+.menu-overlay {
+  z-index: 140;
+}
+
+.cursor,
+.cursor-dot {
+  z-index: 600;
+}
+
+.loader {
+  z-index: 700;
+}
+
+.hero,
+.philosophy,
+.states,
+.objects,
+.studio,
+.journal,
+.final-image,
+.footer {
+  transform: translateZ(0);
+}
+
+.hero::after,
+.philosophy::after,
+.states::after,
+.objects::after,
+.studio::after,
+.journal::after,
+.final-image::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background:
+    radial-gradient(circle at 18% 22%, rgba(255,255,255,.025), transparent 30%),
+    radial-gradient(circle at 82% 72%, rgba(255,255,255,.018), transparent 34%);
+  mix-blend-mode: soft-light;
+}
+
+.hero > *,
+.philosophy > *,
+.states > *,
+.objects > *,
+.studio > *,
+.journal > *,
+.final-image > *,
+.footer > * {
+  position: relative;
+  z-index: 2;
+}
+
+.hero .mist-canvas,
+.hero .hero-noise {
+  position: absolute;
+}
+
+@media (max-width: 767px) {
+  .fluid-field {
+    opacity: .34;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fluid-field {
+    display: none;
+  }
+}
