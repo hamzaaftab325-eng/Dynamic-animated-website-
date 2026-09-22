@@ -5,6 +5,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 import FogCanvas from "../components/FogCanvas";
+import CloudLayers from "../components/CloudLayers";
 import LiquidMedia from "../components/LiquidMedia";
 
 if (typeof window !== "undefined") {
@@ -253,6 +254,30 @@ export default function Home() {
           start: "30% top",
           end: "bottom top",
           scrub: true,
+        },
+      });
+
+      gsap.to(".cloud-parallax--a", {
+        y: () => window.innerHeight * 0.32,
+        ease: "none",
+        scrollTrigger: {
+          trigger: ".hero",
+          start: "top top",
+          end: "bottom top",
+          scrub: true,
+          invalidateOnRefresh: true,
+        },
+      });
+
+      gsap.to(".cloud-parallax--b", {
+        y: () => window.innerHeight * 0.18,
+        ease: "none",
+        scrollTrigger: {
+          trigger: ".hero",
+          start: "top top",
+          end: "bottom top",
+          scrub: true,
+          invalidateOnRefresh: true,
         },
       });
 
@@ -664,6 +689,7 @@ export default function Home() {
         </div>
 
         <FogCanvas />
+        <CloudLayers />
 
         <h1 className="hero__title">
           <span className="hero__title-mask">
