@@ -1945,3 +1945,95 @@ img {
     bottom: 18px;
   }
 }
+
+
+/* Hero QA correction — restore visible forest depth */
+.hero {
+  background: #b9c1b8;
+}
+
+.hero__background {
+  inset: -1%;
+  transform-origin: center center;
+}
+
+.hero__background::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(238,240,234,.16) 0%,
+      rgba(223,228,221,.09) 34%,
+      rgba(198,207,199,.04) 68%,
+      rgba(173,186,177,.03) 100%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(240,241,236,.08) 0%,
+      rgba(202,211,203,.03) 48%,
+      rgba(128,145,134,.11) 100%
+    );
+}
+
+.hero__background img {
+  object-position: center 42%;
+  filter:
+    saturate(.46)
+    contrast(.79)
+    brightness(.94)
+    sepia(.02);
+}
+
+.fog-canvas {
+  opacity: .18;
+  mix-blend-mode: screen;
+}
+
+.hero__title {
+  left: 17.4%;
+  top: 50.5%;
+  width: min(410px, 38vw);
+  color: rgba(255,255,255,.94);
+  font-size: clamp(18px,1.38vw,22px);
+  text-shadow: 0 1px 7px rgba(66,75,68,.08);
+}
+
+.header {
+  color: rgba(255,255,255,.92);
+}
+
+.aside-fixed {
+  color: rgba(255,255,255,.78);
+}
+
+.world-clock__time,
+.world-clock__place,
+.aside-fixed small,
+.aside-fixed__scroll {
+  color: rgba(255,255,255,.78);
+}
+
+@media (max-width: 767px) {
+  .hero__background img {
+    object-position: 54% center;
+    filter:
+      saturate(.42)
+      contrast(.77)
+      brightness(.95)
+      sepia(.02);
+  }
+
+  .fog-canvas {
+    opacity: .16;
+  }
+
+  .hero__title {
+    left: 18px;
+    right: 18px;
+    width: calc(100% - 36px);
+    top: 49%;
+    font-size: 16px;
+  }
+}
