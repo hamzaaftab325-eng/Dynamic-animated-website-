@@ -129,12 +129,21 @@ export default function LiquidMedia({
     let texture: THREE.Texture | null = null;
     let material: THREE.ShaderMaterial | null = null;
     let frame = 0;
+    let isVisible = true;
     let lastScroll = window.scrollY;
     let velocityTarget = 0;
     let velocity = 0;
 
     const mouseTarget = new THREE.Vector2(0.5, 0.5);
     const mouse = new THREE.Vector2(0.5, 0.5);
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting;
+      },
+      { rootMargin: "20% 0px 20% 0px", threshold: 0.01 }
+    );
+    observer.observe(host);
 
     const onPointerMove = (event: PointerEvent) => {
       const rect = host.getBoundingClientRect();
@@ -211,7 +220,9 @@ export default function LiquidMedia({
           material.uniforms.uVelocity.value = velocity;
           material.uniforms.uMouse.value.copy(mouse);
 
-          renderer.render(scene, camera);
+          if (isVisible) {
+            renderer.render(scene, camera);
+          }
           frame = requestAnimationFrame(tick);
         };
 
@@ -228,6 +239,7 @@ export default function LiquidMedia({
       window.removeEventListener("resize", resize);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("pointermove", onPointerMove);
+      observer.disconnect();
       material?.dispose();
       texture?.dispose();
       renderer.dispose();
