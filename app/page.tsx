@@ -13,7 +13,7 @@ if (typeof window !== "undefined") {
 
 const IMAGES = {
   hero:
-    "https://images.unsplash.com/photo-1511497584788-876760111969?auto=format&fit=crop&q=90&w=2400",
+    "https://commons.wikimedia.org/wiki/Special:Redirect/file/Mist-covered_trees_in_a_silent_forest_(55012037214).jpg",
   garden:
     "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&q=90&w=1800",
   water:
@@ -209,8 +209,8 @@ export default function Home() {
       intro
         .fromTo(
           ".hero__background",
-          { scale: 1.07, opacity: 0 },
-          { scale: 1, opacity: 1, duration: 1.45, ease: "power3.out" }
+          { scale: 1.025, opacity: 0 },
+          { scale: 1, opacity: 1, duration: 1.35, ease: "power3.out" }
         )
         .fromTo(
           ".hero__title-inner",
@@ -232,8 +232,8 @@ export default function Home() {
         );
 
       gsap.to(".hero__background", {
-        scale: 1.045,
-        yPercent: 3,
+        scale: 1.018,
+        yPercent: 1.4,
         ease: "none",
         scrollTrigger: {
           trigger: ".hero",
@@ -244,24 +244,12 @@ export default function Home() {
       });
 
       gsap.to(".hero__title", {
-        yPercent: -35,
+        yPercent: -18,
         opacity: 0,
         ease: "none",
         scrollTrigger: {
           trigger: ".hero",
           start: "30% top",
-          end: "bottom top",
-          scrub: true,
-        },
-      });
-
-      gsap.to(".hero-clouds", {
-        yPercent: 18,
-        opacity: 0.24,
-        ease: "none",
-        scrollTrigger: {
-          trigger: ".hero",
-          start: "top top",
           end: "bottom top",
           scrub: true,
         },
@@ -662,7 +650,7 @@ export default function Home() {
         <small>©2026</small>
 
         <div className="aside-fixed__clocks">
-          <Clock zone="Europe/Copenhagen" place="cest, copenhagen" />
+          <Clock zone="Asia/Dubai" place="gst, dubai uae" />
           <Clock zone="Asia/Tokyo" place="jst, tokyo" />
         </div>
 
@@ -676,15 +664,9 @@ export default function Home() {
 
         <FogCanvas />
 
-        <div className="hero-clouds" aria-hidden="true">
-          <span className="hero-cloud hero-cloud--one" />
-          <span className="hero-cloud hero-cloud--two" />
-          <span className="hero-cloud hero-cloud--three" />
-        </div>
-
         <h1 className="hero__title">
           <span className="hero__title-mask">
-            <span className="hero__title-inner">Return to what is essential</span>
+            <span className="hero__title-inner">Remember who you are</span>
           </span>
         </h1>
       </section>
