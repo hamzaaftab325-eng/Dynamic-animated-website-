@@ -4,7 +4,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
-import FogCanvas from "../components/FogCanvas";
 import CloudLayers from "../components/CloudLayers";
 import LiquidMedia from "../components/LiquidMedia";
 
@@ -13,24 +12,21 @@ if (typeof window !== "undefined") {
 }
 
 const IMAGES = {
-  hero:
-    "/home_fv_img.webp",
-  garden:
-    "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&q=90&w=1800",
-  water:
-    "https://images.unsplash.com/photo-1600607688969-a5bfcd646154?auto=format&fit=crop&q=90&w=1800",
-  incense:
-    "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&q=90&w=1800",
-  room:
-    "/home_projects_img.webp",
+  hero: "/home_fv_img.webp",
+  philosophy1:
+    "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&q=88&w=1800",
+  philosophy2:
+    "https://images.unsplash.com/photo-1600607688969-a5bfcd646154?auto=format&fit=crop&q=88&w=1800",
+  philosophy3:
+    "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&q=88&w=1800",
+  projectsBackground: "/home_projects_img.webp",
   school:
-    "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&q=90&w=1600",
+    "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&q=88&w=1800",
   craft:
-    "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&q=90&w=1600",
+    "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&q=88&w=1800",
   retreat:
-    "https://images.unsplash.com/photo-1500534314209-a25ddb2bd4296?auto=format&fit=crop&q=90&w=1600",
-  company:
-    "/home_company_img.webp",
+    "https://images.unsplash.com/photo-1500534314209-a25ddb2bd4296?auto=format&fit=crop&q=88&w=1800",
+  company: "/home_company_img.webp",
 };
 
 const PROJECTS = [
@@ -41,25 +37,22 @@ const PROJECTS = [
     description:
       "A quiet place for learning, care and presence — designed around the relationship between parent, child and the spaces they grow through.",
     image: IMAGES.school,
-    link: "View School",
   },
   {
     index: "02",
     title: "Craft",
-    lead: "Awakening the senses through material.",
+    lead: "Awakening the senses through Japanese aesthetics.",
     description:
       "Objects and spaces shaped through texture, restraint and contemporary Japanese sensibility. Less decoration, more depth.",
     image: IMAGES.craft,
-    link: "View Craft",
   },
   {
     index: "03",
     title: "Retreat",
-    lead: "Returning to your natural rhythm.",
+    lead: "Returning to your essence.",
     description:
       "A slower experience of landscape, ritual and quiet. A space to move away from noise and back toward attention.",
     image: IMAGES.retreat,
-    link: "View Retreat",
   },
 ];
 
@@ -95,14 +88,12 @@ function Clock({ zone, place }: { zone: string; place: string }) {
 function CloneLink({
   children,
   href = "#",
-  className = "",
 }: {
   children: string;
   href?: string;
-  className?: string;
 }) {
   return (
-    <a href={href} className={"clone-link magnetic " + className}>
+    <a href={href} className="clone-link magnetic">
       <span className="clone-link__line clone-link__line--top" />
       <span className="clone-link__body">
         <span className="clone-link__clip">
@@ -138,7 +129,6 @@ export default function Home() {
   const [loaded, setLoaded] = useState(false);
   const [progress, setProgress] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [activeProject, setActiveProject] = useState(0);
 
   const menuItems = useMemo(
     () => ["home", "philosophy", "projects", "company", "contact"],
@@ -148,24 +138,22 @@ export default function Home() {
   useEffect(() => {
     let current = 0;
     const id = window.setInterval(() => {
-      current += Math.max(3, Math.round((100 - current) * 0.22));
+      current += Math.max(4, Math.round((100 - current) * 0.24));
 
       if (current >= 100) {
-        current = 100;
         setProgress(100);
         window.clearInterval(id);
-        window.setTimeout(() => setLoaded(true), 180);
+        window.setTimeout(() => setLoaded(true), 160);
       } else {
         setProgress(current);
       }
-    }, 30);
+    }, 26);
 
     return () => window.clearInterval(id);
   }, []);
 
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "";
-
     return () => {
       document.body.style.overflow = "";
     };
@@ -173,18 +161,11 @@ export default function Home() {
 
   useEffect(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const fineDesktop = window.matchMedia("(min-width: 768px) and (pointer: fine)").matches;
+    const desktop = window.matchMedia("(min-width: 768px) and (pointer: fine)").matches;
 
-    if (reduced || !fineDesktop) return;
+    if (reduced || !desktop) return;
 
-    const lenis = new Lenis({
-      lerp: 0.105,
-      smoothWheel: true,
-      syncTouch: false,
-      wheelMultiplier: 1.0,
-      touchMultiplier: 1.15,
-    });
-
+    const lenis = new Lenis();
     const raf = (time: number) => lenis.raf(time * 1000);
 
     gsap.ticker.add(raf);
@@ -206,102 +187,74 @@ export default function Home() {
     const desktop = window.matchMedia("(min-width: 768px)").matches;
 
     const ctx = gsap.context(() => {
-      const intro = gsap.timeline({ delay: 0.03 });
+      gsap.fromTo(
+        ".hero__background",
+        { opacity: 0, scale: 1.02 },
+        { opacity: 1, scale: 1, duration: 1.25, ease: "power3.out" }
+      );
 
-      intro
-        .fromTo(
-          ".hero__background",
-          { scale: 1.025, opacity: 0 },
-          { scale: 1, opacity: 1, duration: 1.35, ease: "power3.out" }
-        )
-        .fromTo(
-          ".hero__title-inner",
-          { yPercent: 110, opacity: 0, filter: "blur(7px)" },
-          {
-            yPercent: 0,
-            opacity: 1,
-            filter: "blur(0px)",
-            duration: 0.85,
-            ease: "power4.out",
+      gsap.fromTo(
+        ".hero__title-inner",
+        { yPercent: 100, opacity: 0 },
+        {
+          yPercent: 0,
+          opacity: 1,
+          duration: 1.05,
+          delay: 0.15,
+          ease: "expo.out",
+        }
+      );
+
+      gsap.fromTo(
+        ".aside-fixed",
+        { opacity: 0 },
+        { opacity: 1, duration: 0.6, delay: 0.35, ease: "none" }
+      );
+
+      ScrollTrigger.create({
+        trigger: ".hero",
+        start: () => "top+=" + window.innerHeight * 0.05 + " top",
+        onEnter: () =>
+          gsap.to(".hero__title", {
+            autoAlpha: 0,
+            duration: 0.5,
+            ease: "power2.out",
+          }),
+        onLeaveBack: () =>
+          gsap.to(".hero__title", {
+            autoAlpha: 1,
+            duration: 0.5,
+            ease: "power2.out",
+          }),
+      });
+
+      const cloudWrapper = document.querySelector<HTMLElement>(".homeHeader_cloud");
+      if (cloudWrapper) {
+        gsap.to(cloudWrapper, {
+          y: () => cloudWrapper.getBoundingClientRect().height * 0.5,
+          ease: "none",
+          scrollTrigger: {
+            trigger: cloudWrapper,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: true,
+            invalidateOnRefresh: true,
           },
-          "-=0.8"
-        )
-        .fromTo(
-          ".aside-fixed",
-          { opacity: 0, y: 8 },
-          { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" },
-          "-=0.4"
-        );
-
-      gsap.to(".hero__background", {
-        scale: 1.018,
-        yPercent: 1.4,
-        ease: "none",
-        scrollTrigger: {
-          trigger: ".hero",
-          start: "top top",
-          end: "bottom top",
-          scrub: true,
-        },
-      });
-
-      gsap.to(".hero__title", {
-        yPercent: -18,
-        opacity: 0,
-        ease: "none",
-        scrollTrigger: {
-          trigger: ".hero",
-          start: "30% top",
-          end: "bottom top",
-          scrub: true,
-        },
-      });
-
-      gsap.to(".cloud-parallax--a", {
-        y: () => window.innerHeight * 0.32,
-        ease: "none",
-        scrollTrigger: {
-          trigger: ".hero",
-          start: "top top",
-          end: "bottom top",
-          scrub: true,
-          invalidateOnRefresh: true,
-        },
-      });
-
-      gsap.to(".cloud-parallax--b", {
-        y: () => window.innerHeight * 0.18,
-        ease: "none",
-        scrollTrigger: {
-          trigger: ".hero",
-          start: "top top",
-          end: "bottom top",
-          scrub: true,
-          invalidateOnRefresh: true,
-        },
-      });
+        });
+      }
 
       gsap.utils.toArray<HTMLElement>(".mesh-title").forEach((title) => {
         const lines = title.querySelectorAll<HTMLElement>(".mesh-title__line");
 
         gsap.fromTo(
           lines,
-          {
-            yPercent: 118,
-            rotateX: 10,
-            opacity: 0.03,
-            filter: "blur(8px)",
-            skewY: 1.8,
-          },
+          { yPercent: 100, opacity: 0 },
           {
             yPercent: 0,
-            rotateX: 0,
             opacity: 1,
-            filter: "blur(0px)",
-            skewY: 0,
+            duration: 1.4,
             stagger: 0.07,
-            duration: 0.88,
-            ease: "power4.out",
+            ease: "expo.out",
             scrollTrigger: {
               trigger: title,
               start: "top 88%",
@@ -314,13 +267,12 @@ export default function Home() {
       gsap.utils.toArray<HTMLElement>(".text-reveal").forEach((item) => {
         gsap.fromTo(
           item,
-          { y: 20, opacity: 0, filter: "blur(4px)" },
+          { y: 20, opacity: 0 },
           {
             y: 0,
             opacity: 1,
-            filter: "blur(0px)",
-            duration: 0.62,
-            ease: "power3.out",
+            duration: 1.1,
+            ease: "expo.out",
             scrollTrigger: {
               trigger: item,
               start: "top 90%",
@@ -330,131 +282,113 @@ export default function Home() {
         );
       });
 
-      gsap.utils.toArray<HTMLElement>(".philosophy-media").forEach((media, index) => {
+      gsap.utils.toArray<HTMLElement>(".philosophy-media").forEach((media) => {
         gsap.fromTo(
           media,
+          { clipPath: "inset(0 0 100% 0)" },
           {
-            clipPath:
-              index % 2 === 0
-                ? "inset(0 100% 0 0)"
-                : "inset(0 0 0 100%)",
-            scale: 0.985,
-          },
-          {
-            clipPath: "inset(0 0% 0 0%)",
-            scale: 1,
-            duration: 1.05,
-            ease: "power4.inOut",
+            clipPath: "inset(0 0 0% 0)",
+            duration: 1.4,
+            ease: "expo.out",
             scrollTrigger: {
               trigger: media,
-              start: "top 86%",
+              start: "top 88%",
               once: true,
             },
           }
         );
       });
 
-      gsap.to(".projects-intro__bg", {
-        clipPath: "inset(0% 0% 0% 0%)",
-        scale: 1,
-        ease: "none",
-        scrollTrigger: {
-          trigger: ".projects-intro",
-          start: "top 75%",
-          end: "center center",
-          scrub: true,
-        },
-      });
-
-      gsap.to(".projects-intro__overlay", {
-        opacity: 0.5,
-        ease: "none",
-        scrollTrigger: {
-          trigger: ".projects-intro",
-          start: "top 75%",
-          end: "center center",
-          scrub: true,
-        },
-      });
-
       gsap.fromTo(
         ".projects-intro__content",
-        { y: 40, opacity: 0 },
+        { opacity: 0, y: 22 },
         {
-          y: 0,
           opacity: 1,
-          duration: 0.8,
-          ease: "power3.out",
+          y: 0,
+          duration: 1.1,
+          ease: "expo.out",
           scrollTrigger: {
             trigger: ".projects-intro",
-            start: "top 70%",
+            start: "top 74%",
             once: true,
           },
         }
       );
 
-      gsap.utils.toArray<HTMLElement>(".project-marker").forEach((marker, index) => {
-        ScrollTrigger.create({
-          trigger: marker,
-          start: "top center",
-          end: "bottom center",
-          onEnter: () => setActiveProject(index),
-          onEnterBack: () => setActiveProject(index),
-        });
-
-        const image = document.querySelector<HTMLElement>(
-          `.project-layer[data-index="${index}"] img`
-        );
-
-        if (image) {
-          gsap.fromTo(
-            image,
-            { yPercent: -4.5, scale: 1.06 },
-            {
-              yPercent: 4.5,
-              scale: 1.015,
-              ease: "none",
-              scrollTrigger: {
-                trigger: marker,
-                start: "top bottom",
-                end: "bottom top",
-                scrub: true,
-              },
-            }
-          );
-        }
-      });
-
-      if (desktop) {
+      gsap.utils.toArray<HTMLElement>(".project-sticky__image img").forEach((image) => {
         gsap.fromTo(
-          ".company__background",
-          { scale: 1.08, yPercent: -2 },
+          image,
+          { yPercent: -5 },
           {
-            scale: 1,
-            yPercent: 3,
+            yPercent: 5,
             ease: "none",
             scrollTrigger: {
-              trigger: ".company",
+              trigger: image.closest(".project-sticky"),
               start: "top bottom",
               end: "bottom top",
               scrub: true,
             },
           }
         );
+      });
+
+      if (desktop) {
+        const target = document.querySelector<HTMLElement>(".project-sequence");
+        const sections = document.querySelector<HTMLElement>(".project-sections");
+        const items = Array.from(
+          document.querySelectorAll<HTMLElement>(".project-sticky")
+        );
+
+        if (target && sections && items.length) {
+          const sectionHeight = items[0].getBoundingClientRect().height;
+          const targetHeight = sections.getBoundingClientRect().height;
+          const finalHeight = Math.max(
+            sectionHeight,
+            targetHeight - sectionHeight * 0.5
+          );
+
+          target.style.height = String(finalHeight) + "px";
+
+          const range = Math.max(finalHeight - window.innerHeight, 1);
+          const half = sectionHeight * 0.5;
+
+          items.forEach((item, index) => {
+            if (index === 0) {
+              item.style.top = "0px";
+            } else if (index === items.length - 1) {
+              item.style.top = "";
+            } else {
+              const raw = sectionHeight * index;
+              const top = (half * raw) / (range + half);
+              item.style.top = String(top) + "px";
+            }
+          });
+
+          gsap.to(sections, {
+            y: -half,
+            ease: "none",
+            scrollTrigger: {
+              trigger: target,
+              start: "top top",
+              end: "bottom bottom",
+              scrub: true,
+              invalidateOnRefresh: true,
+            },
+          });
+        }
       }
 
       gsap.fromTo(
         ".company__content",
-        { y: 32, opacity: 0, filter: "blur(5px)" },
+        { opacity: 0, y: 24 },
         {
-          y: 0,
           opacity: 1,
-          filter: "blur(0px)",
-          duration: 0.82,
-          ease: "power4.out",
+          y: 0,
+          duration: 1.2,
+          ease: "expo.out",
           scrollTrigger: {
             trigger: ".company",
-            start: "top 72%",
+            start: "top 78%",
             once: true,
           },
         }
@@ -462,14 +396,14 @@ export default function Home() {
 
       gsap.fromTo(
         ".footer__next-title",
-        { yPercent: 115 },
+        { yPercent: 100 },
         {
           yPercent: 0,
-          duration: 0.9,
-          ease: "power4.out",
+          duration: 1.0,
+          ease: "expo.out",
           scrollTrigger: {
             trigger: ".footer",
-            start: "top 82%",
+            start: "top 85%",
             once: true,
           },
         }
@@ -482,12 +416,10 @@ export default function Home() {
   useEffect(() => {
     const fine = window.matchMedia("(pointer: fine)").matches;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
     if (!fine || reduced) return;
 
     const cursor = document.querySelector<HTMLElement>(".cursor");
     const dot = document.querySelector<HTMLElement>(".cursor-dot");
-
     if (!cursor || !dot) return;
 
     let x = innerWidth / 2;
@@ -499,92 +431,43 @@ export default function Home() {
     const move = (event: MouseEvent) => {
       tx = event.clientX;
       ty = event.clientY;
-      dot.style.transform = `translate3d(${tx}px,${ty}px,0)`;
+      dot.style.transform =
+        "translate3d(" + tx + "px," + ty + "px,0)";
     };
 
     const tick = () => {
       x += (tx - x) * 0.2;
       y += (ty - y) * 0.2;
-      cursor.style.transform = `translate3d(${x}px,${y}px,0)`;
+      cursor.style.transform =
+        "translate3d(" + x + "px," + y + "px,0)";
       frame = requestAnimationFrame(tick);
     };
 
     const over = (event: Event) => {
       const target = event.target as HTMLElement;
-      if (
-        target.closest(
-          ".magnetic, .project-stage__image, .philosophy-media, .menu-trigger"
-        )
-      ) {
+      if (target.closest(".magnetic, .project-sticky__image, .philosophy-media")) {
         cursor.classList.add("is-active");
       }
     };
 
     const out = (event: Event) => {
       const target = event.target as HTMLElement;
-      if (
-        target.closest(
-          ".magnetic, .project-stage__image, .philosophy-media, .menu-trigger"
-        )
-      ) {
+      if (target.closest(".magnetic, .project-sticky__image, .philosophy-media")) {
         cursor.classList.remove("is-active");
       }
     };
 
-    addEventListener("mousemove", move, { passive: true });
+    window.addEventListener("mousemove", move, { passive: true });
     document.addEventListener("mouseover", over);
     document.addEventListener("mouseout", out);
-
     frame = requestAnimationFrame(tick);
 
     return () => {
       cancelAnimationFrame(frame);
-      removeEventListener("mousemove", move);
+      window.removeEventListener("mousemove", move);
       document.removeEventListener("mouseover", over);
       document.removeEventListener("mouseout", out);
     };
-  }, []);
-
-  useEffect(() => {
-    const fine = window.matchMedia("(pointer: fine)").matches;
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    if (!fine || reduced) return;
-
-    const elements = Array.from(document.querySelectorAll<HTMLElement>(".magnetic"));
-    const cleanups: Array<() => void> = [];
-
-    elements.forEach((element) => {
-      const xTo = gsap.quickTo(element, "x", {
-        duration: 0.28,
-        ease: "power3.out",
-      });
-      const yTo = gsap.quickTo(element, "y", {
-        duration: 0.28,
-        ease: "power3.out",
-      });
-
-      const move = (event: MouseEvent) => {
-        const rect = element.getBoundingClientRect();
-        xTo((event.clientX - (rect.left + rect.width / 2)) * 0.12);
-        yTo((event.clientY - (rect.top + rect.height / 2)) * 0.12);
-      };
-
-      const leave = () => {
-        xTo(0);
-        yTo(0);
-      };
-
-      element.addEventListener("mousemove", move);
-      element.addEventListener("mouseleave", leave);
-
-      cleanups.push(() => {
-        element.removeEventListener("mousemove", move);
-        element.removeEventListener("mouseleave", leave);
-      });
-    });
-
-    return () => cleanups.forEach((cleanup) => cleanup());
   }, []);
 
   return (
@@ -595,10 +478,8 @@ export default function Home() {
       <div className="cursor-dot" aria-hidden="true" />
 
       <div className={loaded ? "loader loader--done" : "loader"}>
-        <p className="loader__message">Return to what is essential</p>
-        <div className="loader__progress">
-          <span>{progress}</span>
-        </div>
+        <p className="loader__message">Remember who you are</p>
+        <div className="loader__progress">{progress}</div>
       </div>
 
       <header className="header">
@@ -608,7 +489,7 @@ export default function Home() {
         </a>
 
         <div className="header__tools">
-          <div className="language-switch" aria-label="Language">
+          <div className="language-switch">
             <a className="language-switch__item is-active magnetic" href="#home">
               <i />
               <span>en</span>
@@ -623,23 +504,18 @@ export default function Home() {
             className="menu-trigger magnetic"
             type="button"
             onClick={() => setMenuOpen((open) => !open)}
-            aria-label={menuOpen ? "Close menu" : "Open menu"}
           >
             <span className="menu-trigger__circle">
               <i />
               <i />
             </span>
-            <span className="menu-trigger__text">
-              {menuOpen ? "close" : "menu"}
-            </span>
+            <span>{menuOpen ? "close" : "menu"}</span>
             <span className="menu-trigger__line" />
           </button>
         </div>
       </header>
 
       <nav className={menuOpen ? "menu-overlay is-open" : "menu-overlay"}>
-        <div className="menu-overlay__fog" />
-
         <div className="menu-overlay__body">
           <ul className="menu-overlay__list">
             {menuItems.map((item, index) => (
@@ -658,234 +534,170 @@ export default function Home() {
               </li>
             ))}
           </ul>
-
-          <div className="menu-overlay__locations">
-            <div>
-              <span>tokyo</span>
-              <p>35°41′N / 139°41′E</p>
-            </div>
-            <div>
-              <span>copenhagen</span>
-              <p>55°40′N / 12°34′E</p>
-            </div>
-          </div>
         </div>
       </nav>
 
       <aside className="aside-fixed">
         <small>©2026</small>
-
         <div className="aside-fixed__clocks">
           <Clock zone="Asia/Dubai" place="gst, dubai uae" />
-          <Clock zone="Asia/Tokyo" place="jst, tokyo" />
+          <Clock zone="Asia/Tokyo" place="jst, tokyo jpn" />
         </div>
-
         <span className="aside-fixed__scroll">scroll</span>
       </aside>
 
       <section className="hero" id="home">
+        <div className="hero__contents">
+          <div className="hero__inner">
+            <h1 className="hero__title">
+              <span className="hero__title-mask">
+                <span className="hero__title-inner">Remember who you are</span>
+              </span>
+            </h1>
+          </div>
+        </div>
+
         <div className="hero__background">
           <img src={IMAGES.hero} alt="" />
         </div>
 
-        <FogCanvas />
         <CloudLayers />
-
-        <h1 className="hero__title">
-          <span className="hero__title-mask">
-            <span className="hero__title-inner">Remember who you are</span>
-          </span>
-        </h1>
       </section>
 
       <section className="philosophy" id="philosophy">
-        <div className="philosophy__sticky">
-          <div className="layout-grid">
-            <SectionLabel>philosophy</SectionLabel>
+        <div className="layout-grid philosophy__content">
+          <SectionLabel>philosophy</SectionLabel>
 
-            <div className="philosophy__main">
-              <p className="paragraph-title mesh-title">
-                <span className="mesh-title__clip">
-                  <span className="mesh-title__line">Sharing a quieter</span>
-                </span>
-                <span className="mesh-title__clip">
-                  <span className="mesh-title__line">way of seeing</span>
-                </span>
+          <div className="philosophy__head">
+            <p className="paragraph-title mesh-title">
+              <span className="mesh-title__clip">
+                <span className="mesh-title__line">Sharing</span>
+              </span>
+              <span className="mesh-title__clip">
+                <span className="mesh-title__line">the quiet spirit</span>
+              </span>
+              <span className="mesh-title__clip">
+                <span className="mesh-title__line paragraph-title__end">of harmony</span>
+              </span>
+            </p>
+
+            <div className="philosophy__description text-reveal">
+              <p>
+                Harmony is not something to be created. It is something to be
+                remembered — a quiet path back to oneself and to the world around us.
               </p>
+            </div>
 
-              <div className="philosophy__description text-reveal">
-                <p>
-                  Harmony is not something we add at the end. It appears when each
-                  element is allowed to belong — material, light, silence and time.
-                </p>
-                <p>
-                  KASUMI creates spaces and objects that make attention feel natural
-                  again.
-                </p>
+            <CloneLink href="#projects">View Philosophy</CloneLink>
+          </div>
+
+          <div className="philosophy__foot">
+            <div className="philosophy__images">
+              <div className="philosophy-media philosophy-media--one">
+                <LiquidMedia src={IMAGES.philosophy1} intensity={0.22} />
               </div>
-
-              <CloneLink href="#projects">View Philosophy</CloneLink>
+              <div className="philosophy-media philosophy-media--two">
+                <LiquidMedia src={IMAGES.philosophy2} intensity={0.2} />
+              </div>
+              <div className="philosophy-media philosophy-media--three">
+                <LiquidMedia src={IMAGES.philosophy3} intensity={0.18} />
+              </div>
             </div>
-          </div>
-        </div>
-
-        <div className="philosophy__gallery">
-          <div className="philosophy__pair">
-            <div className="philosophy-media philosophy-media--left">
-              <LiquidMedia
-                src={IMAGES.garden}
-                intensity={0.34}
-                ariaLabel="Quiet garden architecture"
-              />
-            </div>
-
-            <div className="philosophy-media philosophy-media--right">
-              <LiquidMedia
-                src={IMAGES.water}
-                intensity={0.3}
-                ariaLabel="Quiet material study"
-              />
-            </div>
-          </div>
-
-          <div className="philosophy-media philosophy-media--single">
-            <LiquidMedia
-              src={IMAGES.incense}
-              intensity={0.28}
-              ariaLabel="Dark interior study"
-            />
           </div>
         </div>
       </section>
 
       <section className="projects-intro" id="projects">
-        <div className="projects-intro__sticky">
-          <div className="projects-intro__bg">
-            <img src={IMAGES.room} alt="" />
-          </div>
-          <div className="projects-intro__overlay" />
+        <div className="projects-intro__background">
+          <img src={IMAGES.projectsBackground} alt="" />
+        </div>
 
-          <div className="layout-grid projects-intro__content">
-            <SectionLabel>projects</SectionLabel>
+        <div className="layout-grid projects-intro__content">
+          <SectionLabel>projects</SectionLabel>
 
-            <div className="projects-intro__main">
-              <p className="paragraph-title mesh-title">
-                <span className="mesh-title__clip">
-                  <span className="mesh-title__line">Designing the dimensions</span>
-                </span>
-                <span className="mesh-title__clip">
-                  <span className="mesh-title__line">of slower living</span>
-                </span>
-              </p>
+          <div className="projects-intro__main">
+            <p className="paragraph-title mesh-title">
+              <span className="mesh-title__clip">
+                <span className="mesh-title__line">Designing</span>
+              </span>
+              <span className="mesh-title__clip">
+                <span className="mesh-title__line">the dimensions</span>
+              </span>
+              <span className="mesh-title__clip">
+                <span className="mesh-title__line">of life</span>
+              </span>
+            </p>
 
-              <div className="projects-intro__description">
-                <p>
-                  Through three practices, KASUMI explores how life is nurtured,
-                  how living is enriched, and how one returns to attention.
-                </p>
-              </div>
+            <p className="projects-intro__description text-reveal">
+              Through three practices, KASUMI explores how life is nurtured, how
+              living is enriched, and how one returns to attention.
+            </p>
 
-              <CloneLink href="#project-sequence">View Projects</CloneLink>
-            </div>
+            <CloneLink href="#project-sequence">View Projects</CloneLink>
           </div>
         </div>
       </section>
 
       <section className="project-sequence" id="project-sequence">
-        <div className="project-stage">
-          <div className="project-stage__label">projects</div>
-
-          <div className="project-stage__copy">
-            {PROJECTS.map((project, index) => (
-              <article
-                key={project.title}
-                className={
-                  activeProject === index
-                    ? "project-copy is-active"
-                    : "project-copy"
-                }
-                data-index={index}
-              >
-                <hgroup>
-                  <h2>
-                    <span>{project.index}</span>
-                    <strong>{project.title}</strong>
-                  </h2>
-                </hgroup>
-
-                <p className="project-copy__lead">{project.lead}</p>
-                <p className="project-copy__description">
-                  {project.description}
-                </p>
-
-                <CloneLink>{project.link}</CloneLink>
-              </article>
-            ))}
-          </div>
-
-          <div className="project-stage__media">
-            {PROJECTS.map((project, index) => (
-              <figure
-                key={project.image}
-                className={
-                  activeProject === index
-                    ? "project-layer is-active"
-                    : "project-layer"
-                }
-                data-index={index}
-              >
-                <div className="project-stage__image">
-                  <img src={project.image} alt={project.title} />
-                </div>
-              </figure>
-            ))}
-          </div>
-
-          <div className="project-stage__counter">
-            <span>{PROJECTS[activeProject].index}</span>
-            <i />
-            <span>03</span>
-          </div>
-        </div>
-
-        <div className="project-markers" aria-hidden="true">
+        <div className="project-sections">
           {PROJECTS.map((project) => (
-            <div className="project-marker" key={project.index} />
+            <section className="project-sticky" key={project.index}>
+              <div className="project-sticky__inner">
+                <SectionLabel>projects</SectionLabel>
+
+                <div className="project-sticky__body">
+                  <div className="project-sticky__text">
+                    <h2 className="project-sticky__title">
+                      <span>{project.index}</span>
+                      <strong>{project.title}</strong>
+                    </h2>
+
+                    <p className="project-sticky__lead">{project.lead}</p>
+                    <p className="project-sticky__description">
+                      {project.description}
+                    </p>
+
+                    <CloneLink>View {project.title}</CloneLink>
+                  </div>
+
+                  <figure className="project-sticky__image">
+                    <img src={project.image} alt={project.title} />
+                  </figure>
+                </div>
+              </div>
+            </section>
           ))}
         </div>
       </section>
 
       <section className="company" id="company">
-        <div className="company__sticky">
-          <div className="company__background">
-            <img src={IMAGES.company} alt="" />
-          </div>
-          <div className="company__shade" />
+        <div className="company__background">
+          <img src={IMAGES.company} alt="" />
+        </div>
 
-          <div className="layout-grid company__content">
-            <SectionLabel>company</SectionLabel>
+        <div className="company__content">
+          <SectionLabel>company</SectionLabel>
 
-            <div className="company__main">
-              <div className="company__mark">
-                <Seal />
-                <span>KASUMI</span>
-              </div>
+          <div className="company__main">
+            <div className="company__mark">
+              <Seal />
+            </div>
 
+            <div className="company__text">
               <p className="paragraph-title mesh-title">
                 <span className="mesh-title__clip">
                   <span className="mesh-title__line">Who we are</span>
                 </span>
               </p>
 
-              <div className="company__description">
+              <div className="company__description text-reveal">
                 <p>
-                  We believe lasting work begins with attention. Across space,
-                  object and digital experience, we build with restraint so the
-                  essential qualities of a thing can remain visible.
+                  No matter how the world changes, what truly enriches human life
+                  remains remarkably quiet: attention, beauty, craft and belonging.
                 </p>
                 <p>
-                  Between Tokyo and Copenhagen, our practice combines Japanese
-                  sensitivity with contemporary craft.
+                  Across cultures and borders, we carry a way of being that leaves
+                  room for one&apos;s inner nature to unfold.
                 </p>
               </div>
 
@@ -901,11 +713,11 @@ export default function Home() {
             <span className="footer__name">kasumi</span>
 
             <a className="footer__next magnetic" href="#philosophy">
-              <span className="footer__next-rule footer__next-rule--top" />
+              <span className="footer__next-rule" />
               <span className="footer__next-clip">
                 <span className="footer__next-title">Philosophy</span>
               </span>
-              <span className="footer__next-rule footer__next-rule--bottom" />
+              <span className="footer__next-rule" />
             </a>
           </div>
 
@@ -925,8 +737,8 @@ export default function Home() {
 
             <div className="footer__locations">
               <div>
-                <span>copenhagen</span>
-                <p>frederiksberg<br />denmark</p>
+                <span>dubai</span>
+                <p>concept office<br />uae</p>
               </div>
               <div>
                 <span>tokyo</span>
@@ -939,8 +751,8 @@ export default function Home() {
             <small>©2026</small>
 
             <div className="footer__clocks">
-              <Clock zone="Europe/Copenhagen" place="cest, copenhagen" />
-              <Clock zone="Asia/Tokyo" place="jst, tokyo" />
+              <Clock zone="Asia/Dubai" place="gst, dubai uae" />
+              <Clock zone="Asia/Tokyo" place="jst, tokyo jpn" />
             </div>
 
             <a href="#home">top</a>
