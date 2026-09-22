@@ -177,10 +177,11 @@ export default function Home() {
     if (reduced || !fineDesktop) return;
 
     const lenis = new Lenis({
-      duration: 0.82,
+      lerp: 0.105,
       smoothWheel: true,
       syncTouch: false,
-      wheelMultiplier: 0.92,
+      wheelMultiplier: 1.0,
+      touchMultiplier: 1.15,
     });
 
     const raf = (time: number) => lenis.raf(time * 1000);
