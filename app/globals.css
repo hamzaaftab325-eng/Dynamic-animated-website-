@@ -2037,3 +2037,21 @@ img {
     font-size: 16px;
   }
 }
+
+
+/* Enhanced living fog + smooth-scroll polish */
+.fog-canvas {
+  opacity: .29;
+  will-change: opacity, transform;
+  transform: translateZ(0);
+}
+
+.hero__background {
+  will-change: transform;
+}
+
+@media (max-width: 767px) {
+  .fog-canvas {
+    opacity: .23;
+  }
+}
