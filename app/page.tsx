@@ -146,7 +146,7 @@ export default function Home() {
       wheelMultiplier: 1.0,
     });
 
-    const raf = (time: number) => lenis.raf(time);
+    const raf = (time: number) => lenis.raf(time * 1000);
     gsap.ticker.add(raf);
     gsap.ticker.lagSmoothing(0);
     lenis.on("scroll", ScrollTrigger.update);
