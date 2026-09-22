@@ -2178,3 +2178,103 @@ img {
     animation: none !important;
   }
 }
+
+
+/* Exact extracted cloud assets: seamless right-to-left motion */
+.home-cloud {
+  left: -5vw;
+  width: 110vw;
+}
+
+.home-cloud--a {
+  top: 10vh;
+  height: 42vh;
+  opacity: .58;
+}
+
+.home-cloud--b {
+  top: 36vh;
+  height: 44vh;
+  opacity: .42;
+}
+
+.cloud-track {
+  width: max-content;
+  height: 100%;
+}
+
+.cloud-item {
+  width: 110vw;
+  height: 100%;
+  flex: 0 0 110vw;
+  margin-right: 0;
+}
+
+.cloud-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  opacity: 1;
+  filter: none;
+}
+
+.cloud-track--a {
+  animation: extractedCloudA 26s linear infinite;
+}
+
+.cloud-track--b {
+  animation: extractedCloudB 34s linear infinite;
+}
+
+@keyframes extractedCloudA {
+  from { transform: translate3d(0,0,0); }
+  to { transform: translate3d(-110vw,0,0); }
+}
+
+@keyframes extractedCloudB {
+  from { transform: translate3d(0,0,0); }
+  to { transform: translate3d(-110vw,0,0); }
+}
+
+@media (max-width: 767px) {
+  .home-cloud {
+    left: -20vw;
+    width: 140vw;
+  }
+
+  .home-cloud--a {
+    top: 18vh;
+    height: 31vh;
+    opacity: .52;
+  }
+
+  .home-cloud--b {
+    top: 43vh;
+    height: 33vh;
+    opacity: .36;
+  }
+
+  .cloud-item {
+    width: 140vw;
+    flex-basis: 140vw;
+  }
+
+  .cloud-track--a {
+    animation-duration: 22s;
+  }
+
+  .cloud-track--b {
+    animation-duration: 30s;
+  }
+
+  @keyframes extractedCloudA {
+    from { transform: translate3d(0,0,0); }
+    to { transform: translate3d(-140vw,0,0); }
+  }
+
+  @keyframes extractedCloudB {
+    from { transform: translate3d(0,0,0); }
+    to { transform: translate3d(-140vw,0,0); }
+  }
+}
