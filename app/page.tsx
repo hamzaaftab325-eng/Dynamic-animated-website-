@@ -14,7 +14,7 @@ if (typeof window !== "undefined") {
 
 const IMAGES = {
   hero:
-    "https://images.unsplash.com/photo-1773916543957-d370611ac764?auto=format&fit=crop&q=88&w=2600",
+    "/home_fv_img.webp",
   garden:
     "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&q=90&w=1800",
   water:
@@ -22,7 +22,7 @@ const IMAGES = {
   incense:
     "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&q=90&w=1800",
   room:
-    "https://images.unsplash.com/photo-1549693578-d683be217e58?auto=format&fit=crop&q=90&w=2400",
+    "/home_projects_img.webp",
   school:
     "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&q=90&w=1600",
   craft:
@@ -30,7 +30,7 @@ const IMAGES = {
   retreat:
     "https://images.unsplash.com/photo-1500534314209-a25ddb2bd4296?auto=format&fit=crop&q=90&w=1600",
   company:
-    "https://images.unsplash.com/photo-1511497584788-876760111969?auto=format&fit=crop&q=90&w=2400",
+    "/home_company_img.webp",
 };
 
 const PROJECTS = [
