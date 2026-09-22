@@ -115,16 +115,16 @@ export default function Home() {
   useEffect(() => {
     let current = 0;
     const timer = window.setInterval(() => {
-      current += Math.max(1, Math.round((100 - current) * 0.13));
+      current += Math.max(2, Math.round((100 - current) * 0.2));
       if (current >= 100) {
         current = 100;
         setProgress(100);
         window.clearInterval(timer);
-        window.setTimeout(() => setLoaded(true), 450);
+        window.setTimeout(() => setLoaded(true), 160);
       } else {
         setProgress(current);
       }
-    }, 42);
+    }, 28);
     return () => window.clearInterval(timer);
   }, []);
 
@@ -140,10 +140,10 @@ export default function Home() {
     if (reduced) return;
 
     const lenis = new Lenis({
-      duration: 1.18,
+      duration: 0.72,
       smoothWheel: true,
       syncTouch: false,
-      wheelMultiplier: 0.86,
+      wheelMultiplier: 1.0,
     });
 
     const raf = (time: number) => lenis.raf(time);
@@ -166,7 +166,7 @@ export default function Home() {
       gsap.fromTo(
         ".hero-kicker, .hero-title .line, .hero-meta, .scroll-cue",
         { y: 24, opacity: 0 },
-        { y: 0, opacity: 1, duration: 1.35, stagger: 0.11, ease: "power4.out", delay: 0.2 }
+        { y: 0, opacity: 1, duration: 0.9, stagger: 0.075, ease: "power4.out", delay: 0.06 }
       );
 
       gsap.to(".hero-content", {
@@ -184,9 +184,9 @@ export default function Home() {
             yPercent: 0,
             opacity: 1,
             rotateX: 0,
-            duration: 1.25,
+            duration: 0.82,
             ease: "power4.out",
-            scrollTrigger: { trigger: line, start: "top 88%", once: true },
+            scrollTrigger: { trigger: line, start: "top 90%", once: true },
           }
         );
       });
@@ -198,9 +198,9 @@ export default function Home() {
           {
             y: 0,
             opacity: 1,
-            duration: 1.1,
+            duration: 0.72,
             ease: "power3.out",
-            scrollTrigger: { trigger: item, start: "top 88%", once: true },
+            scrollTrigger: { trigger: item, start: "top 90%", once: true },
           }
         );
       });
@@ -210,9 +210,9 @@ export default function Home() {
         if (!inner) return;
         gsap.fromTo(
           inner,
-          { yPercent: -5.5, scale: 1.06 },
+          { yPercent: -4.5, scale: 1.045 },
           {
-            yPercent: 5.5,
+            yPercent: 4.5,
             scale: 1.01,
             ease: "none",
             scrollTrigger: { trigger: shell, start: "top bottom", end: "bottom top", scrub: true },
@@ -241,9 +241,9 @@ export default function Home() {
             {
               clipPath: "inset(0% 0 0% 0)",
               scale: 1,
-              duration: 1.55,
+              duration: 0.96,
               ease: "power4.out",
-              scrollTrigger: { trigger: project, start: "top 80%", once: true },
+              scrollTrigger: { trigger: project, start: "top 84%", once: true },
             }
           );
         }
@@ -255,9 +255,9 @@ export default function Home() {
             {
               y: 0,
               opacity: 1,
-              duration: 1.3,
+              duration: 0.78,
               ease: "power4.out",
-              scrollTrigger: { trigger: project, start: "top 74%", once: true },
+              scrollTrigger: { trigger: project, start: "top 82%", once: true },
             }
           );
         }
@@ -265,7 +265,7 @@ export default function Home() {
 
       gsap.fromTo(
         ".final-image .media-inner",
-        { scale: 1.09 },
+        { scale: 1.06 },
         {
           scale: 1.01,
           ease: "none",
@@ -298,8 +298,8 @@ export default function Home() {
     };
 
     const animate = () => {
-      x += (tx - x) * 0.12;
-      y += (ty - y) * 0.12;
+      x += (tx - x) * 0.2;
+      y += (ty - y) * 0.2;
       cursor.style.transform = `translate3d(${x}px,${y}px,0)`;
       frame = requestAnimationFrame(animate);
     };
