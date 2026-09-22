@@ -2055,3 +2055,126 @@ img {
     opacity: .23;
   }
 }
+
+
+/* Reference-style duplicated cloud strips */
+.home-clouds {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.home-cloud {
+  position: absolute;
+  left: -10vw;
+  width: 120vw;
+  height: 40vh;
+  will-change: transform;
+}
+
+.home-cloud--a {
+  top: 18vh;
+  opacity: .68;
+  filter: blur(1.2px);
+}
+
+.home-cloud--b {
+  top: 40vh;
+  opacity: .48;
+  filter: blur(2px);
+}
+
+.cloud-track {
+  position: absolute;
+  inset: 0 auto auto 0;
+  height: 100%;
+  display: flex;
+  width: max-content;
+  will-change: transform;
+}
+
+.cloud-track--a {
+  animation: cloudStripA 22s linear infinite;
+}
+
+.cloud-track--b {
+  animation: cloudStripB 29s linear infinite reverse;
+}
+
+.cloud-item {
+  width: 120vw;
+  height: 100%;
+  flex: 0 0 120vw;
+  margin-right: -16vw;
+}
+
+.cloud-item img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: fill;
+  opacity: .92;
+  transform: translateZ(0);
+}
+
+@keyframes cloudStripA {
+  from { transform: translate3d(0,0,0); }
+  to { transform: translate3d(-104vw,0,0); }
+}
+
+@keyframes cloudStripB {
+  from { transform: translate3d(-18vw,0,0); }
+  to { transform: translate3d(-122vw,0,0); }
+}
+
+/* Shader remains secondary; visible strip motion comes from DOM clouds */
+.fog-canvas {
+  z-index: 2;
+  opacity: .11;
+}
+
+.hero__title {
+  z-index: 5;
+}
+
+@media (max-width: 767px) {
+  .home-cloud {
+    left: -32vw;
+    width: 165vw;
+    height: 28vh;
+  }
+
+  .home-cloud--a {
+    top: 23vh;
+    opacity: .58;
+  }
+
+  .home-cloud--b {
+    top: 48vh;
+    opacity: .40;
+  }
+
+  .cloud-item {
+    width: 165vw;
+    flex-basis: 165vw;
+    margin-right: -22vw;
+  }
+
+  @keyframes cloudStripA {
+    from { transform: translate3d(0,0,0); }
+    to { transform: translate3d(-143vw,0,0); }
+  }
+
+  @keyframes cloudStripB {
+    from { transform: translate3d(-24vw,0,0); }
+    to { transform: translate3d(-167vw,0,0); }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cloud-track {
+    animation: none !important;
+  }
+}
