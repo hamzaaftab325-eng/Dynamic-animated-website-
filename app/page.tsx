@@ -4,8 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
-import MistCanvas from "../components/MistCanvas";
-import FluidField from "../components/FluidField";
+import FogCanvas from "../components/FogCanvas";
 import LiquidMedia from "../components/LiquidMedia";
 
 if (typeof window !== "undefined") {
@@ -13,53 +12,58 @@ if (typeof window !== "undefined") {
 }
 
 const IMAGES = {
-  forest:
-    "https://images.unsplash.com/photo-1511497584788-876760111969?auto=format&fit=crop&q=88&w=2400",
-  architecture:
-    "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&q=88&w=2400",
-  interior:
-    "https://images.unsplash.com/photo-1600607688969-a5bfcd646154?auto=format&fit=crop&q=88&w=2400",
-  stone:
-    "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&q=88&w=2400",
-  light:
-    "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&q=88&w=2400",
+  hero:
+    "https://images.unsplash.com/photo-1511497584788-876760111969?auto=format&fit=crop&q=90&w=2400",
+  garden:
+    "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&q=90&w=1800",
+  water:
+    "https://images.unsplash.com/photo-1600607688969-a5bfcd646154?auto=format&fit=crop&q=90&w=1800",
+  incense:
+    "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&q=90&w=1800",
+  room:
+    "https://images.unsplash.com/photo-1549693578-d683be217e58?auto=format&fit=crop&q=90&w=2400",
+  school:
+    "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&q=90&w=1600",
+  craft:
+    "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&q=90&w=1600",
+  retreat:
+    "https://images.unsplash.com/photo-1500534314209-a25ddb2bd4296?auto=format&fit=crop&q=90&w=1600",
+  company:
+    "https://images.unsplash.com/photo-1511497584788-876760111969?auto=format&fit=crop&q=90&w=2400",
 };
 
 const PROJECTS = [
   {
     index: "01",
-    label: "SPACE",
-    title: "House of Quiet",
-    tagline: "Architecture shaped around pause.",
-    text:
-      "A residential study in shadow, framed views and tactile materials. Every threshold slows the body before revealing the next room.",
-    image: IMAGES.architecture,
-    align: "left",
+    title: "School",
+    lead: "Nurturing the foundations of life.",
+    description:
+      "A quiet place for learning, care and presence — designed around the relationship between parent, child and the spaces they grow through.",
+    image: IMAGES.school,
+    link: "View School",
   },
   {
     index: "02",
-    label: "OBJECT",
-    title: "Stone Vessel",
-    tagline: "Weight made calm.",
-    text:
-      "A single object reduced to proportion, texture and touch. Its surface is intended to become richer through use rather than remain perfect.",
-    image: IMAGES.stone,
-    align: "right",
+    title: "Craft",
+    lead: "Awakening the senses through material.",
+    description:
+      "Objects and spaces shaped through texture, restraint and contemporary Japanese sensibility. Less decoration, more depth.",
+    image: IMAGES.craft,
+    link: "View Craft",
   },
   {
     index: "03",
-    label: "LIGHT",
-    title: "Paper Light",
-    tagline: "A glow shaped by shadow.",
-    text:
-      "A low, ambient source that makes darkness part of the object. The piece is read less as a lamp and more as a quiet field of light.",
-    image: IMAGES.light,
-    align: "left",
+    title: "Retreat",
+    lead: "Returning to your natural rhythm.",
+    description:
+      "A slower experience of landscape, ritual and quiet. A space to move away from noise and back toward attention.",
+    image: IMAGES.retreat,
+    link: "View Retreat",
   },
 ];
 
-function Clock({ zone, label }: { zone: string; label: string }) {
-  const [time, setTime] = useState("--:--:--");
+function Clock({ zone, place }: { zone: string; place: string }) {
+  const [time, setTime] = useState("00:00:00");
 
   useEffect(() => {
     const update = () => {
@@ -75,34 +79,57 @@ function Clock({ zone, label }: { zone: string; label: string }) {
     };
 
     update();
-    const timer = window.setInterval(update, 1000);
-    return () => window.clearInterval(timer);
+    const id = window.setInterval(update, 1000);
+    return () => window.clearInterval(id);
   }, [zone]);
 
   return (
-    <div className="clock">
-      <span>{label}</span>
-      <time>{time}</time>
-    </div>
+    <time className="world-clock">
+      <span className="world-clock__time">{time}</span>
+      <span className="world-clock__place">{place}</span>
+    </time>
   );
 }
 
-function TextLink({ children, href = "#" }: { children: string; href?: string }) {
+function CloneLink({
+  children,
+  href = "#",
+  className = "",
+}: {
+  children: string;
+  href?: string;
+  className?: string;
+}) {
   return (
-    <a className="text-link magnetic" href={href}>
-      <span className="text-link__mask">
-        <span className="text-link__track">
-          <span>{children}</span>
-          <span aria-hidden="true">{children}</span>
+    <a href={href} className={"clone-link magnetic " + className}>
+      <span className="clone-link__line clone-link__line--top" />
+      <span className="clone-link__body">
+        <span className="clone-link__clip">
+          <span className="clone-link__track">
+            <span>{children}</span>
+            <span aria-hidden="true">{children}</span>
+          </span>
         </span>
       </span>
-      <i aria-hidden="true">↗</i>
+      <span className="clone-link__line clone-link__line--bottom" />
     </a>
   );
 }
 
-function SideIndex({ children }: { children: React.ReactNode }) {
-  return <span className="side-index">{children}</span>;
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return <div className="section-label-vertical">{children}</div>;
+}
+
+function Seal() {
+  return (
+    <span className="seal-mark" aria-hidden="true">
+      <i />
+      <i />
+      <i />
+      <i />
+      <b>K</b>
+    </span>
+  );
 }
 
 export default function Home() {
@@ -110,31 +137,34 @@ export default function Home() {
   const [loaded, setLoaded] = useState(false);
   const [progress, setProgress] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [activeProject, setActiveProject] = useState(0);
 
   const menuItems = useMemo(
-    () => ["Home", "Philosophy", "Projects", "Studio", "Contact"],
+    () => ["home", "philosophy", "projects", "company", "contact"],
     []
   );
 
   useEffect(() => {
-    let value = 0;
-    const timer = window.setInterval(() => {
-      value += Math.max(4, Math.round((100 - value) * 0.26));
+    let current = 0;
+    const id = window.setInterval(() => {
+      current += Math.max(3, Math.round((100 - current) * 0.22));
 
-      if (value >= 100) {
+      if (current >= 100) {
+        current = 100;
         setProgress(100);
-        window.clearInterval(timer);
-        window.setTimeout(() => setLoaded(true), 130);
+        window.clearInterval(id);
+        window.setTimeout(() => setLoaded(true), 180);
       } else {
-        setProgress(value);
+        setProgress(current);
       }
-    }, 24);
+    }, 30);
 
-    return () => window.clearInterval(timer);
+    return () => window.clearInterval(id);
   }, []);
 
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "";
+
     return () => {
       document.body.style.overflow = "";
     };
@@ -142,15 +172,15 @@ export default function Home() {
 
   useEffect(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const desktop = window.matchMedia("(min-width: 768px) and (pointer: fine)").matches;
+    const fineDesktop = window.matchMedia("(min-width: 768px) and (pointer: fine)").matches;
 
-    if (reduced || !desktop) return;
+    if (reduced || !fineDesktop) return;
 
     const lenis = new Lenis({
-      duration: 0.76,
+      duration: 0.82,
       smoothWheel: true,
       syncTouch: false,
-      wheelMultiplier: 0.96,
+      wheelMultiplier: 0.92,
     });
 
     const raf = (time: number) => lenis.raf(time * 1000);
@@ -171,47 +201,39 @@ export default function Home() {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduced) return;
 
-    const ctx = gsap.context(() => {
-      gsap.defaults({ ease: "power4.out" });
+    const desktop = window.matchMedia("(min-width: 768px)").matches;
 
-      const intro = gsap.timeline({ delay: 0.04 });
+    const ctx = gsap.context(() => {
+      const intro = gsap.timeline({ delay: 0.03 });
 
       intro
         .fromTo(
-          ".hero__kicker",
-          { y: 14, opacity: 0, filter: "blur(6px)" },
-          { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.5 }
+          ".hero__background",
+          { scale: 1.07, opacity: 0 },
+          { scale: 1, opacity: 1, duration: 1.45, ease: "power3.out" }
         )
         .fromTo(
-          ".hero__headline-inner",
-          { yPercent: 116, rotateX: 10, opacity: 0, filter: "blur(8px)" },
+          ".hero__title-inner",
+          { yPercent: 110, opacity: 0, filter: "blur(7px)" },
           {
             yPercent: 0,
-            rotateX: 0,
             opacity: 1,
             filter: "blur(0px)",
-            duration: 0.86,
-            stagger: 0.07,
+            duration: 0.85,
+            ease: "power4.out",
           },
-          "-=0.2"
+          "-=0.8"
         )
         .fromTo(
-          ".hero__liquid-wrap",
-          { scale: 0.94, opacity: 0, filter: "blur(12px)" },
-          { scale: 1, opacity: 1, filter: "blur(0px)", duration: 0.9 },
-          "-=0.58"
-        )
-        .fromTo(
-          ".hero__meta, .hero__scroll",
-          { y: 10, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.42, stagger: 0.04 },
+          ".aside-fixed",
+          { opacity: 0, y: 8 },
+          { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" },
           "-=0.4"
         );
 
-      gsap.to(".hero__headline--top", {
-        xPercent: -4,
-        yPercent: -8,
-        opacity: 0.18,
+      gsap.to(".hero__background", {
+        scale: 1.045,
+        yPercent: 3,
         ease: "none",
         scrollTrigger: {
           trigger: ".hero",
@@ -221,10 +243,21 @@ export default function Home() {
         },
       });
 
-      gsap.to(".hero__headline--bottom", {
-        xPercent: 5,
-        yPercent: -2,
-        opacity: 0.18,
+      gsap.to(".hero__title", {
+        yPercent: -35,
+        opacity: 0,
+        ease: "none",
+        scrollTrigger: {
+          trigger: ".hero",
+          start: "30% top",
+          end: "bottom top",
+          scrub: true,
+        },
+      });
+
+      gsap.to(".hero-clouds", {
+        yPercent: 18,
+        opacity: 0.24,
         ease: "none",
         scrollTrigger: {
           trigger: ".hero",
@@ -234,62 +267,46 @@ export default function Home() {
         },
       });
 
-      gsap.to(".hero__liquid-wrap", {
-        yPercent: -10,
-        scale: 1.04,
-        opacity: 0.48,
-        ease: "none",
-        scrollTrigger: {
-          trigger: ".hero",
-          start: "top top",
-          end: "bottom top",
-          scrub: true,
-        },
-      });
-
-      gsap.to(".hero .mist-canvas", {
-        scale: 1.08,
-        opacity: 0.58,
-        ease: "none",
-        scrollTrigger: {
-          trigger: ".hero",
-          start: "top top",
-          end: "bottom top",
-          scrub: true,
-        },
-      });
-
-      gsap.utils.toArray<HTMLElement>(".line-reveal").forEach((mask) => {
-        const line = mask.querySelector<HTMLElement>(".line-reveal__inner");
-        if (!line) return;
+      gsap.utils.toArray<HTMLElement>(".mesh-title").forEach((title) => {
+        const lines = title.querySelectorAll<HTMLElement>(".mesh-title__line");
 
         gsap.fromTo(
-          line,
-          { yPercent: 116, rotateX: 8, opacity: 0.04, filter: "blur(5px)" },
+          lines,
+          {
+            yPercent: 118,
+            rotateX: 10,
+            opacity: 0.03,
+            filter: "blur(8px)",
+            skewY: 1.8,
+          },
           {
             yPercent: 0,
             rotateX: 0,
             opacity: 1,
             filter: "blur(0px)",
-            duration: 0.76,
+            skewY: 0,
+            stagger: 0.07,
+            duration: 0.88,
+            ease: "power4.out",
             scrollTrigger: {
-              trigger: mask,
-              start: "top 89%",
+              trigger: title,
+              start: "top 88%",
               once: true,
             },
           }
         );
       });
 
-      gsap.utils.toArray<HTMLElement>(".copy-reveal").forEach((item) => {
+      gsap.utils.toArray<HTMLElement>(".text-reveal").forEach((item) => {
         gsap.fromTo(
           item,
-          { y: 22, opacity: 0, filter: "blur(4px)" },
+          { y: 20, opacity: 0, filter: "blur(4px)" },
           {
             y: 0,
             opacity: 1,
             filter: "blur(0px)",
             duration: 0.62,
+            ease: "power3.out",
             scrollTrigger: {
               trigger: item,
               start: "top 90%",
@@ -299,144 +316,146 @@ export default function Home() {
         );
       });
 
-      gsap.utils.toArray<HTMLElement>(".image-reveal").forEach((shell, index) => {
-        const image = shell.querySelector<HTMLElement>("img");
-        if (!image) return;
-
-        const fromRight = index % 2 === 1;
-
-        gsap.set(shell, {
-          clipPath: fromRight ? "inset(0 0 0 100%)" : "inset(0 100% 0 0)",
-        });
-        gsap.set(image, {
-          scale: 1.08,
-          xPercent: fromRight ? -3 : 3,
-        });
-
-        gsap
-          .timeline({
+      gsap.utils.toArray<HTMLElement>(".philosophy-media").forEach((media, index) => {
+        gsap.fromTo(
+          media,
+          {
+            clipPath:
+              index % 2 === 0
+                ? "inset(0 100% 0 0)"
+                : "inset(0 0 0 100%)",
+            scale: 0.985,
+          },
+          {
+            clipPath: "inset(0 0% 0 0%)",
+            scale: 1,
+            duration: 1.05,
+            ease: "power4.inOut",
             scrollTrigger: {
-              trigger: shell,
-              start: "top 87%",
+              trigger: media,
+              start: "top 86%",
               once: true,
             },
-          })
-          .to(shell, {
-            clipPath: "inset(0 0% 0 0%)",
-            duration: 0.9,
-            ease: "power4.inOut",
-          })
-          .to(
-            image,
-            {
-              scale: 1,
-              xPercent: 0,
-              duration: 1.0,
-              ease: "power3.out",
-            },
-            0.05
-          );
-
-        gsap.to(image, {
-          yPercent: fromRight ? 3 : -3,
-          ease: "none",
-          scrollTrigger: {
-            trigger: shell,
-            start: "top bottom",
-            end: "bottom top",
-            scrub: true,
-          },
-        });
+          }
+        );
       });
 
-      gsap.utils.toArray<HTMLElement>(".project").forEach((project, index) => {
-        const copy = project.querySelector<HTMLElement>(".project__copy");
-        const media = project.querySelector<HTMLElement>(".project__liquid-shell");
-        const indexEl = project.querySelector<HTMLElement>(".project__index");
-
-        if (copy) {
-          gsap.fromTo(
-            copy.children,
-            { y: 28, opacity: 0, filter: "blur(5px)" },
-            {
-              y: 0,
-              opacity: 1,
-              filter: "blur(0px)",
-              duration: 0.66,
-              stagger: 0.07,
-              scrollTrigger: {
-                trigger: project,
-                start: "top 74%",
-                once: true,
-              },
-            }
-          );
-        }
-
-        if (media) {
-          gsap.fromTo(
-            media,
-            {
-              clipPath:
-                index % 2 === 0
-                  ? "inset(8% 12% 8% 0%)"
-                  : "inset(8% 0% 8% 12%)",
-              scale: 0.985,
-            },
-            {
-              clipPath: "inset(0% 0% 0% 0%)",
-              scale: 1,
-              duration: 0.95,
-              ease: "power4.inOut",
-              scrollTrigger: {
-                trigger: project,
-                start: "top 80%",
-                once: true,
-              },
-            }
-          );
-        }
-
-        if (indexEl) {
-          gsap.fromTo(
-            indexEl,
-            { opacity: 0, y: 16 },
-            {
-              opacity: 1,
-              y: 0,
-              duration: 0.5,
-              scrollTrigger: {
-                trigger: project,
-                start: "top 82%",
-                once: true,
-              },
-            }
-          );
-        }
-      });
-
-      gsap.to(".studio__media img", {
-        scale: 1.04,
-        yPercent: -4,
+      gsap.to(".projects-intro__bg", {
+        clipPath: "inset(0% 0% 0% 0%)",
+        scale: 1,
         ease: "none",
         scrollTrigger: {
-          trigger: ".studio",
-          start: "top bottom",
-          end: "bottom top",
+          trigger: ".projects-intro",
+          start: "top 75%",
+          end: "center center",
+          scrub: true,
+        },
+      });
+
+      gsap.to(".projects-intro__overlay", {
+        opacity: 0.5,
+        ease: "none",
+        scrollTrigger: {
+          trigger: ".projects-intro",
+          start: "top 75%",
+          end: "center center",
           scrub: true,
         },
       });
 
       gsap.fromTo(
-        ".footer__name span",
-        { yPercent: 118 },
+        ".projects-intro__content",
+        { y: 40, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: ".projects-intro",
+            start: "top 70%",
+            once: true,
+          },
+        }
+      );
+
+      gsap.utils.toArray<HTMLElement>(".project-marker").forEach((marker, index) => {
+        ScrollTrigger.create({
+          trigger: marker,
+          start: "top center",
+          end: "bottom center",
+          onEnter: () => setActiveProject(index),
+          onEnterBack: () => setActiveProject(index),
+        });
+
+        const image = document.querySelector<HTMLElement>(
+          `.project-layer[data-index="${index}"] img`
+        );
+
+        if (image) {
+          gsap.fromTo(
+            image,
+            { yPercent: -4.5, scale: 1.06 },
+            {
+              yPercent: 4.5,
+              scale: 1.015,
+              ease: "none",
+              scrollTrigger: {
+                trigger: marker,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: true,
+              },
+            }
+          );
+        }
+      });
+
+      if (desktop) {
+        gsap.fromTo(
+          ".company__background",
+          { scale: 1.08, yPercent: -2 },
+          {
+            scale: 1,
+            yPercent: 3,
+            ease: "none",
+            scrollTrigger: {
+              trigger: ".company",
+              start: "top bottom",
+              end: "bottom top",
+              scrub: true,
+            },
+          }
+        );
+      }
+
+      gsap.fromTo(
+        ".company__content",
+        { y: 32, opacity: 0, filter: "blur(5px)" },
+        {
+          y: 0,
+          opacity: 1,
+          filter: "blur(0px)",
+          duration: 0.82,
+          ease: "power4.out",
+          scrollTrigger: {
+            trigger: ".company",
+            start: "top 72%",
+            once: true,
+          },
+        }
+      );
+
+      gsap.fromTo(
+        ".footer__next-title",
+        { yPercent: 115 },
         {
           yPercent: 0,
           duration: 0.9,
-          stagger: 0.035,
+          ease: "power4.out",
           scrollTrigger: {
             trigger: ".footer",
-            start: "top 80%",
+            start: "top 82%",
             once: true,
           },
         }
@@ -457,41 +476,48 @@ export default function Home() {
 
     if (!cursor || !dot) return;
 
-    let x = window.innerWidth / 2;
-    let y = window.innerHeight / 2;
-    let targetX = x;
-    let targetY = y;
+    let x = innerWidth / 2;
+    let y = innerHeight / 2;
+    let tx = x;
+    let ty = y;
     let frame = 0;
 
     const move = (event: MouseEvent) => {
-      targetX = event.clientX;
-      targetY = event.clientY;
-      dot.style.transform = `translate3d(${targetX}px,${targetY}px,0)`;
+      tx = event.clientX;
+      ty = event.clientY;
+      dot.style.transform = `translate3d(${tx}px,${ty}px,0)`;
     };
 
     const tick = () => {
-      x += (targetX - x) * 0.22;
-      y += (targetY - y) * 0.22;
-
+      x += (tx - x) * 0.2;
+      y += (ty - y) * 0.2;
       cursor.style.transform = `translate3d(${x}px,${y}px,0)`;
       frame = requestAnimationFrame(tick);
     };
 
     const over = (event: Event) => {
       const target = event.target as HTMLElement;
-      if (target.closest(".magnetic, .project__liquid-shell, .menu-button")) {
+      if (
+        target.closest(
+          ".magnetic, .project-stage__image, .philosophy-media, .menu-trigger"
+        )
+      ) {
         cursor.classList.add("is-active");
       }
     };
 
     const out = (event: Event) => {
       const target = event.target as HTMLElement;
-      if (target.closest(".magnetic, .project__liquid-shell, .menu-button")) {
+      if (
+        target.closest(
+          ".magnetic, .project-stage__image, .philosophy-media, .menu-trigger"
+        )
+      ) {
         cursor.classList.remove("is-active");
       }
     };
 
-    window.addEventListener("mousemove", move, { passive: true });
+    addEventListener("mousemove", move, { passive: true });
     document.addEventListener("mouseover", over);
     document.addEventListener("mouseout", out);
 
@@ -499,7 +525,7 @@ export default function Home() {
 
     return () => {
       cancelAnimationFrame(frame);
-      window.removeEventListener("mousemove", move);
+      removeEventListener("mousemove", move);
       document.removeEventListener("mouseover", over);
       document.removeEventListener("mouseout", out);
     };
@@ -512,16 +538,22 @@ export default function Home() {
     if (!fine || reduced) return;
 
     const elements = Array.from(document.querySelectorAll<HTMLElement>(".magnetic"));
-    const cleanup: Array<() => void> = [];
+    const cleanups: Array<() => void> = [];
 
     elements.forEach((element) => {
-      const xTo = gsap.quickTo(element, "x", { duration: 0.3, ease: "power3.out" });
-      const yTo = gsap.quickTo(element, "y", { duration: 0.3, ease: "power3.out" });
+      const xTo = gsap.quickTo(element, "x", {
+        duration: 0.28,
+        ease: "power3.out",
+      });
+      const yTo = gsap.quickTo(element, "y", {
+        duration: 0.28,
+        ease: "power3.out",
+      });
 
       const move = (event: MouseEvent) => {
         const rect = element.getBoundingClientRect();
-        xTo((event.clientX - (rect.left + rect.width / 2)) * 0.14);
-        yTo((event.clientY - (rect.top + rect.height / 2)) * 0.14);
+        xTo((event.clientX - (rect.left + rect.width / 2)) * 0.12);
+        yTo((event.clientY - (rect.top + rect.height / 2)) * 0.12);
       };
 
       const leave = () => {
@@ -532,323 +564,378 @@ export default function Home() {
       element.addEventListener("mousemove", move);
       element.addEventListener("mouseleave", leave);
 
-      cleanup.push(() => {
+      cleanups.push(() => {
         element.removeEventListener("mousemove", move);
         element.removeEventListener("mouseleave", leave);
       });
     });
 
-    return () => cleanup.forEach((fn) => fn());
+    return () => cleanups.forEach((cleanup) => cleanup());
   }, []);
 
   return (
     <main ref={rootRef} className={loaded ? "site is-loaded" : "site"}>
-      <FluidField />
-
       <div className="cursor" aria-hidden="true">
         <span>VIEW</span>
       </div>
       <div className="cursor-dot" aria-hidden="true" />
 
-      <div className={loaded ? "loader loader--done" : "loader"} aria-hidden={loaded}>
-        <div className="loader__brand">KASUMI / 霞</div>
-        <div className="loader__phrase">RETURN TO WHAT IS ESSENTIAL</div>
-        <div className="loader__count">{String(progress).padStart(3, "0")}</div>
-        <div className="loader__rule">
-          <span style={{ transform: `scaleX(${progress / 100})` }} />
+      <div className={loaded ? "loader loader--done" : "loader"}>
+        <p className="loader__message">Return to what is essential</p>
+        <div className="loader__progress">
+          <span>{progress}</span>
         </div>
       </div>
 
       <header className="header">
-        <a href="#home" className="brand magnetic" aria-label="Kasumi home">
-          <span className="brand__seal">霞</span>
-          <span>KASUMI</span>
+        <a className="header__logo magnetic" href="#home" aria-label="Kasumi home">
+          <Seal />
+          <span className="header__wordmark">KASUMI</span>
         </a>
 
-        <div className="header__language">EN / JP</div>
+        <div className="header__tools">
+          <div className="language-switch" aria-label="Language">
+            <a className="language-switch__item is-active magnetic" href="#home">
+              <i />
+              <span>en</span>
+            </a>
+            <a className="language-switch__item magnetic" href="#home">
+              <i />
+              <span>ja</span>
+            </a>
+          </div>
 
-        <button
-          type="button"
-          className="menu-button magnetic"
-          onClick={() => setMenuOpen((open) => !open)}
-          aria-label={menuOpen ? "Close menu" : "Open menu"}
-        >
-          <span>{menuOpen ? "CLOSE" : "MENU"}</span>
-          <i className={menuOpen ? "menu-button__icon is-open" : "menu-button__icon"} />
-        </button>
+          <button
+            className="menu-trigger magnetic"
+            type="button"
+            onClick={() => setMenuOpen((open) => !open)}
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+          >
+            <span className="menu-trigger__circle">
+              <i />
+              <i />
+            </span>
+            <span className="menu-trigger__text">
+              {menuOpen ? "close" : "menu"}
+            </span>
+            <span className="menu-trigger__line" />
+          </button>
+        </div>
       </header>
 
-      <div className={menuOpen ? "menu is-open" : "menu"} aria-hidden={!menuOpen}>
-        <div className="menu__ambient" />
+      <nav className={menuOpen ? "menu-overlay is-open" : "menu-overlay"}>
+        <div className="menu-overlay__fog" />
 
-        <nav className="menu__nav">
-          {menuItems.map((item, index) => (
-            <a
-              key={item}
-              href={item === "Home" ? "#home" : "#" + item.toLowerCase()}
-              onClick={() => setMenuOpen(false)}
-            >
-              <span>{String(index + 1).padStart(2, "0")}</span>
-              <strong>{item}</strong>
-            </a>
-          ))}
-        </nav>
+        <div className="menu-overlay__body">
+          <ul className="menu-overlay__list">
+            {menuItems.map((item, index) => (
+              <li key={item}>
+                <a
+                  href={item === "home" ? "#home" : "#" + item}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  <span className="menu-overlay__dot" />
+                  <span className="menu-overlay__number">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <span className="menu-overlay__word">{item}</span>
+                  <span className="menu-overlay__line" />
+                </a>
+              </li>
+            ))}
+          </ul>
 
-        <div className="menu__meta">
-          <div>
-            <span>TOKYO</span>
-            <p>35°41′N / 139°41′E</p>
-          </div>
-          <div>
-            <span>COPENHAGEN</span>
-            <p>55°40′N / 12°34′E</p>
+          <div className="menu-overlay__locations">
+            <div>
+              <span>tokyo</span>
+              <p>35°41′N / 139°41′E</p>
+            </div>
+            <div>
+              <span>copenhagen</span>
+              <p>55°40′N / 12°34′E</p>
+            </div>
           </div>
         </div>
-      </div>
+      </nav>
+
+      <aside className="aside-fixed">
+        <small>©2026</small>
+
+        <div className="aside-fixed__clocks">
+          <Clock zone="Europe/Copenhagen" place="cest, copenhagen" />
+          <Clock zone="Asia/Tokyo" place="jst, tokyo" />
+        </div>
+
+        <span className="aside-fixed__scroll">scroll</span>
+      </aside>
 
       <section className="hero" id="home">
-        <MistCanvas />
-        <div className="hero__grain" />
-
-        <div className="hero__liquid-wrap">
-          <LiquidMedia
-            src={IMAGES.forest}
-            intensity={0.78}
-            className="hero__liquid"
-            ariaLabel="Misted forest"
-          />
+        <div className="hero__background">
+          <img src={IMAGES.hero} alt="" />
         </div>
 
-        <div className="hero__content">
-          <p className="hero__kicker">KASUMI / A STUDY OF QUIET FORM</p>
+        <FogCanvas />
 
-          <h1 className="hero__headline">
-            <span className="hero__headline-mask">
-              <span className="hero__headline-inner hero__headline--top">Return to</span>
-            </span>
-            <span className="hero__headline-mask">
-              <span className="hero__headline-inner hero__headline--bottom">what is essential.</span>
-            </span>
-          </h1>
+        <div className="hero-clouds" aria-hidden="true">
+          <span className="hero-cloud hero-cloud--one" />
+          <span className="hero-cloud hero-cloud--two" />
+          <span className="hero-cloud hero-cloud--three" />
         </div>
 
-        <div className="hero__meta">
-          <Clock zone="Asia/Tokyo" label="TOKYO" />
-          <Clock zone="Europe/Copenhagen" label="COPENHAGEN" />
-        </div>
-
-        <div className="hero__scroll">
-          <span>SCROLL</span>
-          <i />
-        </div>
+        <h1 className="hero__title">
+          <span className="hero__title-mask">
+            <span className="hero__title-inner">Return to what is essential</span>
+          </span>
+        </h1>
       </section>
 
       <section className="philosophy" id="philosophy">
-        <SideIndex>01 — PHILOSOPHY</SideIndex>
+        <div className="philosophy__sticky">
+          <div className="layout-grid">
+            <SectionLabel>philosophy</SectionLabel>
 
-        <div className="philosophy__intro">
-          <span className="section-kicker copy-reveal">THE SPACE BETWEEN / 間</span>
+            <div className="philosophy__main">
+              <p className="paragraph-title mesh-title">
+                <span className="mesh-title__clip">
+                  <span className="mesh-title__line">Sharing a quieter</span>
+                </span>
+                <span className="mesh-title__clip">
+                  <span className="mesh-title__line">way of seeing</span>
+                </span>
+              </p>
 
-          <h2 className="editorial-title">
-            <span className="line-reveal">
-              <span className="line-reveal__inner">Harmony is not added.</span>
-            </span>
-            <span className="line-reveal">
-              <span className="line-reveal__inner is-italic">It is uncovered.</span>
-            </span>
-          </h2>
+              <div className="philosophy__description text-reveal">
+                <p>
+                  Harmony is not something we add at the end. It appears when each
+                  element is allowed to belong — material, light, silence and time.
+                </p>
+                <p>
+                  KASUMI creates spaces and objects that make attention feel natural
+                  again.
+                </p>
+              </div>
 
-          <div className="philosophy__copy copy-reveal">
-            <p>
-              KASUMI explores how stillness can shape an experience. We work with material,
-              shadow, rhythm and absence rather than decoration.
-            </p>
-            <p>
-              The goal is not minimalism for its own sake. It is clarity: enough space for
-              the eye to notice what would otherwise disappear.
-            </p>
-
-            <TextLink>View Philosophy</TextLink>
+              <CloneLink href="#projects">View Philosophy</CloneLink>
+            </div>
           </div>
         </div>
 
-        <div className="philosophy__composition">
-          <figure className="image-reveal philosophy__large">
-            <img src={IMAGES.architecture} alt="Minimal architecture" />
-          </figure>
+        <div className="philosophy__gallery">
+          <div className="philosophy__pair">
+            <div className="philosophy-media philosophy-media--left">
+              <LiquidMedia
+                src={IMAGES.garden}
+                intensity={0.34}
+                ariaLabel="Quiet garden architecture"
+              />
+            </div>
 
-          <div className="philosophy__liquid">
-            <LiquidMedia
-              src={IMAGES.interior}
-              intensity={0.82}
-              ariaLabel="Warm interior with soft natural light"
-            />
+            <div className="philosophy-media philosophy-media--right">
+              <LiquidMedia
+                src={IMAGES.water}
+                intensity={0.3}
+                ariaLabel="Quiet material study"
+              />
+            </div>
           </div>
 
-          <p className="philosophy__caption copy-reveal">
-            A room becomes expressive when light is allowed to complete it.
-          </p>
+          <div className="philosophy-media philosophy-media--single">
+            <LiquidMedia
+              src={IMAGES.incense}
+              intensity={0.28}
+              ariaLabel="Dark interior study"
+            />
+          </div>
         </div>
       </section>
 
       <section className="projects-intro" id="projects">
-        <SideIndex>02 — PROJECTS</SideIndex>
+        <div className="projects-intro__sticky">
+          <div className="projects-intro__bg">
+            <img src={IMAGES.room} alt="" />
+          </div>
+          <div className="projects-intro__overlay" />
 
-        <div className="projects-intro__grid">
-          <span className="section-kicker copy-reveal">SELECTED STUDIES / 2026</span>
+          <div className="layout-grid projects-intro__content">
+            <SectionLabel>projects</SectionLabel>
 
-          <h2 className="editorial-title">
-            <span className="line-reveal">
-              <span className="line-reveal__inner">Designing the dimensions</span>
-            </span>
-            <span className="line-reveal">
-              <span className="line-reveal__inner is-italic">of slower living.</span>
-            </span>
-          </h2>
+            <div className="projects-intro__main">
+              <p className="paragraph-title mesh-title">
+                <span className="mesh-title__clip">
+                  <span className="mesh-title__line">Designing the dimensions</span>
+                </span>
+                <span className="mesh-title__clip">
+                  <span className="mesh-title__line">of slower living</span>
+                </span>
+              </p>
 
-          <p className="projects-intro__copy copy-reveal">
-            Three studies in space, object and light. Each begins with reduction and ends
-            with atmosphere.
-          </p>
+              <div className="projects-intro__description">
+                <p>
+                  Through three practices, KASUMI explores how life is nurtured,
+                  how living is enriched, and how one returns to attention.
+                </p>
+              </div>
+
+              <CloneLink href="#project-sequence">View Projects</CloneLink>
+            </div>
+          </div>
         </div>
       </section>
 
-      <section className="project-stack">
-        {PROJECTS.map((project, index) => (
-          <article className={"project project--" + project.align} key={project.title}>
-            <div className="project__index">{project.index}</div>
+      <section className="project-sequence" id="project-sequence">
+        <div className="project-stage">
+          <div className="project-stage__label">projects</div>
 
-            <div className="project__media-column">
-              <div className="project__liquid-shell">
-                {index === 1 ? (
-                  <figure className="project__still image-reveal">
-                    <img src={project.image} alt={project.title} />
-                  </figure>
-                ) : (
-                  <LiquidMedia
-                    src={project.image}
-                    intensity={index === 0 ? 0.86 : 0.74}
-                    className="project__liquid"
-                    ariaLabel={project.title}
-                  />
-                )}
-              </div>
-            </div>
+          <div className="project-stage__copy">
+            {PROJECTS.map((project, index) => (
+              <article
+                key={project.title}
+                className={
+                  activeProject === index
+                    ? "project-copy is-active"
+                    : "project-copy"
+                }
+                data-index={index}
+              >
+                <hgroup>
+                  <h2>
+                    <span>{project.index}</span>
+                    <strong>{project.title}</strong>
+                  </h2>
+                </hgroup>
 
-            <div className="project__copy">
-              <span className="section-kicker">
-                PROJECTS / {project.label}
-              </span>
+                <p className="project-copy__lead">{project.lead}</p>
+                <p className="project-copy__description">
+                  {project.description}
+                </p>
 
-              <h3>{project.title}</h3>
-              <p className="project__tagline">{project.tagline}</p>
-              <p className="project__body">{project.text}</p>
-              <TextLink>View Project</TextLink>
-            </div>
-          </article>
-        ))}
-      </section>
-
-      <section className="studio" id="studio">
-        <SideIndex>03 — STUDIO</SideIndex>
-
-        <div className="studio__grid">
-          <div className="studio__copy">
-            <span className="section-kicker copy-reveal">WHO WE ARE</span>
-
-            <h2>
-              <span className="line-reveal">
-                <span className="line-reveal__inner">A practice for things</span>
-              </span>
-              <span className="line-reveal">
-                <span className="line-reveal__inner is-italic">that should remain.</span>
-              </span>
-            </h2>
-
-            <p className="copy-reveal">
-              We design interiors, objects and digital experiences from Tokyo and
-              Copenhagen. Our work is built around tactile material, disciplined typography,
-              emotional pacing and long-term usefulness.
-            </p>
-
-            <div className="studio__locations copy-reveal">
-              <span>35°41′N / TOKYO</span>
-              <span>55°40′N / COPENHAGEN</span>
-            </div>
-
-            <TextLink>View Studio</TextLink>
+                <CloneLink>{project.link}</CloneLink>
+              </article>
+            ))}
           </div>
 
-          <figure className="studio__media">
-            <img src={IMAGES.forest} alt="Forest atmosphere" />
-            <figcaption>Quiet is treated as a material.</figcaption>
-          </figure>
+          <div className="project-stage__media">
+            {PROJECTS.map((project, index) => (
+              <figure
+                key={project.image}
+                className={
+                  activeProject === index
+                    ? "project-layer is-active"
+                    : "project-layer"
+                }
+                data-index={index}
+              >
+                <div className="project-stage__image">
+                  <img src={project.image} alt={project.title} />
+                </div>
+              </figure>
+            ))}
+          </div>
+
+          <div className="project-stage__counter">
+            <span>{PROJECTS[activeProject].index}</span>
+            <i />
+            <span>03</span>
+          </div>
+        </div>
+
+        <div className="project-markers" aria-hidden="true">
+          {PROJECTS.map((project) => (
+            <div className="project-marker" key={project.index} />
+          ))}
         </div>
       </section>
 
-      <section className="closing">
-        <div className="closing__media">
-          <LiquidMedia
-            src={IMAGES.light}
-            intensity={0.8}
-            ariaLabel="Warm light in a quiet interior"
-          />
-        </div>
+      <section className="company" id="company">
+        <div className="company__sticky">
+          <div className="company__background">
+            <img src={IMAGES.company} alt="" />
+          </div>
+          <div className="company__shade" />
 
-        <div className="closing__overlay" />
+          <div className="layout-grid company__content">
+            <SectionLabel>company</SectionLabel>
 
-        <div className="closing__copy">
-          <span className="section-kicker">END NOTE / 2026</span>
-          <p>Nothing added without reason.</p>
+            <div className="company__main">
+              <div className="company__mark">
+                <Seal />
+                <span>KASUMI</span>
+              </div>
+
+              <p className="paragraph-title mesh-title">
+                <span className="mesh-title__clip">
+                  <span className="mesh-title__line">Who we are</span>
+                </span>
+              </p>
+
+              <div className="company__description">
+                <p>
+                  We believe lasting work begins with attention. Across space,
+                  object and digital experience, we build with restraint so the
+                  essential qualities of a thing can remain visible.
+                </p>
+                <p>
+                  Between Tokyo and Copenhagen, our practice combines Japanese
+                  sensitivity with contemporary craft.
+                </p>
+              </div>
+
+              <CloneLink href="#contact">View Company</CloneLink>
+            </div>
+          </div>
         </div>
       </section>
 
       <footer className="footer" id="contact">
-        <div className="footer__top">
-          <span className="section-kicker">KASUMI / 霞</span>
+        <div className="footer__inner">
+          <div className="footer__head">
+            <span className="footer__name">kasumi</span>
 
-          <div className="footer__name" aria-label="KASUMI">
-            {"KASUMI".split("").map((letter, index) => (
-              <span key={index}>{letter}</span>
-            ))}
-          </div>
-        </div>
-
-        <div className="footer__middle">
-          <nav>
-            <a href="#philosophy">Philosophy</a>
-            <a href="#projects">Projects</a>
-            <a href="#studio">Studio</a>
-          </nav>
-
-          <div className="footer__contact">
-            <span className="section-kicker">INQUIRIES</span>
-            <a href="mailto:hello@kasumi.studio">hello@kasumi.studio</a>
+            <a className="footer__next magnetic" href="#philosophy">
+              <span className="footer__next-rule footer__next-rule--top" />
+              <span className="footer__next-clip">
+                <span className="footer__next-title">Philosophy</span>
+              </span>
+              <span className="footer__next-rule footer__next-rule--bottom" />
+            </a>
           </div>
 
-          <div className="footer__locations">
-            <div>
-              <span className="section-kicker">TOKYO</span>
-              <p>Kiyosumi / concept studio</p>
+          <div className="footer__body">
+            <nav className="footer__nav">
+              <a href="#home">home</a>
+              <a href="#philosophy">philosophy</a>
+              <a href="#projects">projects</a>
+              <a href="#company">company</a>
+              <a href="#contact">contact</a>
+            </nav>
+
+            <div className="footer__contact">
+              <a href="mailto:hello@kasumi.studio">hello@kasumi.studio</a>
+              <a href="#home">privacy policy</a>
             </div>
-            <div>
-              <span className="section-kicker">COPENHAGEN</span>
-              <p>Frederiksberg / concept studio</p>
+
+            <div className="footer__locations">
+              <div>
+                <span>copenhagen</span>
+                <p>frederiksberg<br />denmark</p>
+              </div>
+              <div>
+                <span>tokyo</span>
+                <p>kiyosumi<br />tokyo, japan</p>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="footer__bottom">
-          <div className="footer__clocks">
-            <Clock zone="Asia/Tokyo" label="TOKYO" />
-            <Clock zone="Europe/Copenhagen" label="COPENHAGEN" />
+          <div className="footer__foot">
+            <small>©2026</small>
+
+            <div className="footer__clocks">
+              <Clock zone="Europe/Copenhagen" place="cest, copenhagen" />
+              <Clock zone="Asia/Tokyo" place="jst, tokyo" />
+            </div>
+
+            <a href="#home">top</a>
           </div>
-
-          <a className="magnetic" href="#home">
-            BACK TO TOP ↑
-          </a>
-
-          <span>© 2026 KASUMI</span>
         </div>
       </footer>
     </main>
