@@ -1467,3 +1467,123 @@ img {
     animation-play-state: paused !important;
   }
 }
+
+
+/* Final hero correction: visible moving fog + pale IZANAMI-like atmosphere */
+.hero {
+  isolation: isolate;
+}
+
+.hero__background {
+  z-index: 0;
+}
+
+.hero__background::after {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(235, 238, 231, .22) 0%,
+      rgba(224, 229, 220, .13) 36%,
+      rgba(205, 214, 205, .08) 70%,
+      rgba(183, 195, 186, .06) 100%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(238, 240, 235, .10) 0%,
+      rgba(216, 223, 214, .07) 48%,
+      rgba(174, 187, 177, .10) 100%
+    );
+}
+
+.hero__background img {
+  filter:
+    saturate(.48)
+    contrast(.72)
+    brightness(1.18);
+}
+
+.homeHeader_clouds {
+  z-index: 3;
+  opacity: 1;
+  overflow: hidden;
+  pointer-events: none;
+  contain: paint;
+}
+
+.homeHeader_cloud {
+  will-change: transform;
+  transform: translate3d(0,0,0);
+}
+
+.cloud {
+  opacity: 1;
+  mix-blend-mode: screen;
+  will-change: transform;
+}
+
+.cloud:first-of-type {
+  opacity: .92;
+}
+
+.cloud:last-of-type {
+  opacity: .76;
+}
+
+.cloud_item,
+.cloud_item.-inView {
+  animation-play-state: running !important;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+.cloud_item:nth-of-type(1) {
+  animation-name: cloudMove01 !important;
+  animation-duration: 100s !important;
+  animation-delay: -50s !important;
+  animation-timing-function: linear !important;
+  animation-iteration-count: infinite !important;
+}
+
+.cloud_item:nth-of-type(2) {
+  animation-name: cloudMove02 !important;
+  animation-duration: 100s !important;
+  animation-delay: 0s !important;
+  animation-timing-function: linear !important;
+  animation-iteration-count: infinite !important;
+}
+
+.cloud_img {
+  transform: translateZ(0);
+}
+
+.cloud_img img {
+  opacity: 1;
+  filter: brightness(1.08) contrast(.92);
+  transform: translateZ(0);
+  user-select: none;
+}
+
+.hero__contents {
+  z-index: 6;
+}
+
+.hero__title {
+  text-shadow: 0 1px 10px rgba(53, 61, 55, .08);
+}
+
+@media (max-width: 767px) {
+  .hero__background img {
+    filter:
+      saturate(.46)
+      contrast(.74)
+      brightness(1.12);
+  }
+
+  .cloud:first-of-type {
+    opacity: .86;
+  }
+
+  .cloud:last-of-type {
+    opacity: .68;
+  }
+}

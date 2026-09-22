@@ -136,6 +136,11 @@ export default function Home() {
   );
 
   useEffect(() => {
+    if ("scrollRestoration" in history) {
+      history.scrollRestoration = "manual";
+    }
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+
     let current = 0;
     const id = window.setInterval(() => {
       current += Math.max(4, Math.round((100 - current) * 0.24));
@@ -213,7 +218,7 @@ export default function Home() {
 
       ScrollTrigger.create({
         trigger: ".hero",
-        start: () => "top+=" + window.innerHeight * 0.05 + " top",
+        start: () => "top+=" + window.innerHeight * 0.12 + " top",
         onEnter: () =>
           gsap.to(".hero__title", {
             autoAlpha: 0,
@@ -230,17 +235,21 @@ export default function Home() {
 
       const cloudWrapper = document.querySelector<HTMLElement>(".homeHeader_cloud");
       if (cloudWrapper) {
-        gsap.to(cloudWrapper, {
-          y: () => cloudWrapper.getBoundingClientRect().height * 0.5,
-          ease: "none",
-          scrollTrigger: {
-            trigger: cloudWrapper,
-            start: "top bottom",
-            end: "bottom top",
-            scrub: true,
-            invalidateOnRefresh: true,
-          },
-        });
+        gsap.fromTo(
+          cloudWrapper,
+          { y: 0 },
+          {
+            y: () => cloudWrapper.getBoundingClientRect().height * 0.5,
+            ease: "none",
+            scrollTrigger: {
+              trigger: ".hero",
+              start: "top top",
+              end: "bottom top",
+              scrub: true,
+              invalidateOnRefresh: true,
+            },
+          }
+        );
       }
 
       gsap.utils.toArray<HTMLElement>(".mesh-title").forEach((title) => {
