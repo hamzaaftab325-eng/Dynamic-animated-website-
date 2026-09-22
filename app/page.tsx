@@ -89,7 +89,7 @@ function CloneLink({
   children,
   href = "#",
 }: {
-  children: string;
+  children: React.ReactNode;
   href?: string;
 }) {
   return (
