@@ -1587,3 +1587,392 @@ img {
     opacity: .68;
   }
 }
+
+
+/* 2026-09 visual QA pass — stable reference-like first screen and section polish */
+
+/* HERO: preserve the dark forest detail but veil it into the pale fog treatment
+   visible on the reference site. */
+.hero {
+  position: relative;
+  isolation: isolate;
+  background: #aeb9af;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(225, 229, 221, .68) 0%,
+      rgba(212, 220, 211, .52) 24%,
+      rgba(191, 203, 193, .30) 62%,
+      rgba(159, 176, 166, .20) 100%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(238, 240, 235, .38) 0%,
+      rgba(221, 226, 219, .20) 44%,
+      rgba(168, 183, 172, .20) 100%
+    );
+  mix-blend-mode: screen;
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      ellipse at 26% 42%,
+      rgba(245, 246, 241, .28) 0%,
+      rgba(236, 239, 233, .10) 30%,
+      transparent 62%
+    );
+}
+
+.hero__background img {
+  filter:
+    saturate(.42)
+    contrast(.68)
+    brightness(1.12) !important;
+  transform: scale(1.01);
+}
+
+.hero__contents {
+  z-index: 7;
+}
+
+.hero__title {
+  color: rgba(255,255,255,.96);
+  font-size: clamp(17px, 1.2vw, 20px);
+  line-height: 1.2;
+  text-shadow: 0 1px 12px rgba(48, 58, 51, .12);
+}
+
+/* Guaranteed moving mist fallback. This sits underneath the extracted
+   alpha cloud WebPs so the hero never looks static if a cloud frame is sparse. */
+.homeHeader_clouds::before,
+.homeHeader_clouds::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  width: 115vw;
+  height: 34vh;
+  left: -12vw;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(42px);
+  opacity: .52;
+  background:
+    radial-gradient(
+      ellipse at center,
+      rgba(247, 248, 244, .74) 0%,
+      rgba(231, 235, 228, .42) 36%,
+      rgba(215, 222, 214, .16) 62%,
+      transparent 78%
+    );
+  will-change: transform;
+}
+
+.homeHeader_clouds::before {
+  top: 17vh;
+  animation: heroMistFallbackA 24s ease-in-out infinite alternate;
+}
+
+.homeHeader_clouds::after {
+  top: 43vh;
+  opacity: .42;
+  animation: heroMistFallbackB 32s ease-in-out infinite alternate;
+}
+
+@keyframes heroMistFallbackA {
+  from { transform: translate3d(-7%, -1%, 0) scale(1); }
+  to { transform: translate3d(12%, 5%, 0) scale(1.08); }
+}
+
+@keyframes heroMistFallbackB {
+  from { transform: translate3d(10%, 3%, 0) scale(1.05); }
+  to { transform: translate3d(-10%, -4%, 0) scale(.98); }
+}
+
+/* Keep the extracted clouds above the fallback mist and make their motion
+   noticeable without becoming fast or distracting. */
+.homeHeader_cloud {
+  z-index: 2;
+}
+
+.cloud {
+  z-index: 2;
+  mix-blend-mode: screen;
+}
+
+.cloud:first-of-type {
+  opacity: .96;
+}
+
+.cloud:last-of-type {
+  opacity: .82;
+}
+
+.cloud_item:nth-of-type(1) {
+  animation-duration: 58s !important;
+  animation-delay: -29s !important;
+}
+
+.cloud_item:nth-of-type(2) {
+  animation-duration: 58s !important;
+}
+
+.cloud:last-of-type .cloud_item:nth-of-type(1),
+.cloud:last-of-type .cloud_item:nth-of-type(2) {
+  animation-duration: 74s !important;
+}
+
+.cloud_img img {
+  filter:
+    brightness(1.28)
+    contrast(.82) !important;
+}
+
+/* HEADER: remove the "floating tiny debug UI" feeling and align elements
+   closer to the reference composition. */
+.header__logo {
+  top: 2.1vw;
+  left: 4.4vw;
+  padding: 0;
+}
+
+.header__logo .seal-mark {
+  width: clamp(38px, 3.25vw, 52px);
+}
+
+.header__wordmark {
+  margin-top: 5px;
+  font-size: 7px;
+  letter-spacing: .13em;
+}
+
+.header__tools {
+  top: 2.25vw;
+  right: 4.6vw;
+  gap: 2.15vw;
+}
+
+.language-switch__item,
+.menu-trigger {
+  font-size: 8px;
+  letter-spacing: .04em;
+}
+
+.menu-trigger {
+  min-width: 72px;
+}
+
+/* Bottom metadata */
+.aside-fixed {
+  inset: auto 4.5vw 4.2vh;
+  font-size: 8px;
+}
+
+.aside-fixed__clocks {
+  gap: 2.4vw;
+}
+
+/* PHILOSOPHY: constrain copy and media so nothing overlaps at common desktop widths. */
+.philosophy__head {
+  min-width: 0;
+}
+
+.philosophy__description {
+  max-width: 520px;
+}
+
+.philosophy-media {
+  box-shadow: 0 0 0 1px rgba(217,215,212,.04);
+}
+
+/* PROJECT INTRO */
+.projects-intro__background {
+  position: relative;
+}
+
+.projects-intro__background::after {
+  background:
+    linear-gradient(90deg, rgba(10,8,1,.30), rgba(10,8,1,.10) 55%, rgba(10,8,1,.18)),
+    rgba(10,8,1,.08);
+}
+
+/* STICKY PROJECTS: force consistent scene height and prevent text/image collisions. */
+.project-sticky {
+  min-height: 86svh;
+}
+
+.project-sticky__inner {
+  min-height: 74svh;
+  align-items: center;
+}
+
+.project-sticky__body {
+  align-items: center;
+  gap: 5vw;
+}
+
+.project-sticky__text {
+  min-width: 0;
+}
+
+.project-sticky__title {
+  margin-inline-end: 0;
+}
+
+.project-sticky__title strong {
+  line-height: 1.02;
+}
+
+.project-sticky__image {
+  justify-self: end;
+  min-height: 520px;
+  max-height: 76svh;
+}
+
+.project-sticky:not(:first-child) .project-sticky__image {
+  margin-block: 0;
+  height: 40vw;
+  max-height: 76svh;
+}
+
+/* COMPANY */
+.company__background::after {
+  background:
+    linear-gradient(180deg, rgba(10,8,1,.08), rgba(10,8,1,.28)),
+    rgba(10,8,1,.08);
+}
+
+.company__main {
+  align-self: center;
+}
+
+/* Footer spacing */
+.footer__body {
+  margin-block-start: 9vw;
+}
+
+/* Tablet cleanup */
+@media (min-width: 768px) and (max-width: 1100px) {
+  .hero__title {
+    font-size: 17px;
+  }
+
+  .header__logo {
+    left: 34px;
+    top: 24px;
+  }
+
+  .header__tools {
+    right: 34px;
+    top: 25px;
+  }
+
+  .philosophy {
+    padding-block-start: 52vw;
+  }
+
+  .philosophy__head {
+    padding-inline-start: 7vw;
+  }
+
+  .project-sticky__inner {
+    grid-template-columns: 18vw 1fr;
+  }
+
+  .project-sticky__body {
+    grid-template-columns: minmax(260px, 1fr) minmax(300px, 34vw);
+  }
+
+  .project-sticky__image,
+  .project-sticky:not(:first-child) .project-sticky__image {
+    width: 34vw;
+    height: 52vw;
+    min-height: 460px;
+  }
+}
+
+/* Mobile visual QA */
+@media (max-width: 767px) {
+  .hero::before {
+    background:
+      linear-gradient(
+        90deg,
+        rgba(226, 230, 222, .58),
+        rgba(183, 197, 187, .26)
+      ),
+      linear-gradient(
+        180deg,
+        rgba(238, 240, 235, .22),
+        rgba(177, 191, 181, .16)
+      );
+  }
+
+  .homeHeader_clouds::before,
+  .homeHeader_clouds::after {
+    width: 150vw;
+    left: -28vw;
+    height: 24vh;
+    filter: blur(34px);
+  }
+
+  .homeHeader_clouds::before {
+    top: 21vh;
+  }
+
+  .homeHeader_clouds::after {
+    top: 48vh;
+  }
+
+  .header__logo {
+    top: 18px;
+    left: 20px;
+  }
+
+  .header__tools {
+    top: 19px;
+    right: 20px;
+    gap: 16px;
+  }
+
+  .hero__inner {
+    padding-inline: 18px;
+  }
+
+  .hero__title {
+    font-size: 16px;
+    max-width: 260px;
+    margin-left: 16vw;
+  }
+
+  .aside-fixed {
+    inset: auto 20px 20px;
+  }
+
+  .project-sticky__title > span {
+    position: static;
+    margin-right: 12px;
+  }
+
+  .project-sticky__body {
+    gap: 0;
+  }
+
+  .project-sticky__image,
+  .project-sticky:not(:first-child) .project-sticky__image {
+    min-height: 0;
+    max-height: none;
+  }
+}

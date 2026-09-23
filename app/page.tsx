@@ -216,22 +216,22 @@ export default function Home() {
         { opacity: 1, duration: 0.6, delay: 0.35, ease: "none" }
       );
 
-      ScrollTrigger.create({
-        trigger: ".hero",
-        start: () => "top+=" + window.innerHeight * 0.12 + " top",
-        onEnter: () =>
-          gsap.to(".hero__title", {
-            autoAlpha: 0,
-            duration: 0.5,
-            ease: "power2.out",
-          }),
-        onLeaveBack: () =>
-          gsap.to(".hero__title", {
-            autoAlpha: 1,
-            duration: 0.5,
-            ease: "power2.out",
-          }),
-      });
+      gsap.fromTo(
+        ".hero__title",
+        { autoAlpha: 1, y: 0 },
+        {
+          autoAlpha: 0,
+          y: -10,
+          ease: "none",
+          scrollTrigger: {
+            trigger: ".hero",
+            start: () => "top+=" + window.innerHeight * 0.42 + " top",
+            end: () => "top+=" + window.innerHeight * 0.72 + " top",
+            scrub: true,
+            invalidateOnRefresh: true,
+          },
+        }
+      );
 
       const cloudWrapper = document.querySelector<HTMLElement>(".homeHeader_cloud");
       if (cloudWrapper) {
@@ -239,7 +239,7 @@ export default function Home() {
           cloudWrapper,
           { y: 0 },
           {
-            y: () => cloudWrapper.getBoundingClientRect().height * 0.5,
+            y: () => cloudWrapper.getBoundingClientRect().height * 0.34,
             ease: "none",
             scrollTrigger: {
               trigger: ".hero",
@@ -349,32 +349,36 @@ export default function Home() {
         );
 
         if (target && sections && items.length) {
-          const sectionHeight = items[0].getBoundingClientRect().height;
-          const targetHeight = sections.getBoundingClientRect().height;
-          const finalHeight = Math.max(
-            sectionHeight,
-            targetHeight - sectionHeight * 0.5
-          );
+          const setupStickyStack = () => {
+            const sectionHeight = items[0].getBoundingClientRect().height;
+            const targetHeight = sections.scrollHeight;
+            const finalHeight = Math.max(
+              sectionHeight * 2.35,
+              targetHeight - sectionHeight * 0.42
+            );
 
-          target.style.height = String(finalHeight) + "px";
+            target.style.height = String(finalHeight) + "px";
 
-          const range = Math.max(finalHeight - window.innerHeight, 1);
-          const half = sectionHeight * 0.5;
+            const range = Math.max(finalHeight - window.innerHeight, 1);
+            const overlap = sectionHeight * 0.42;
 
-          items.forEach((item, index) => {
-            if (index === 0) {
-              item.style.top = "0px";
-            } else if (index === items.length - 1) {
-              item.style.top = "";
-            } else {
-              const raw = sectionHeight * index;
-              const top = (half * raw) / (range + half);
-              item.style.top = String(top) + "px";
-            }
-          });
+            items.forEach((item, index) => {
+              if (index === 0) {
+                item.style.top = "0px";
+              } else if (index === items.length - 1) {
+                item.style.top = "";
+              } else {
+                const raw = sectionHeight * index;
+                const top = (overlap * raw) / (range + overlap);
+                item.style.top = String(Math.max(0, top)) + "px";
+              }
+            });
+          };
 
-          gsap.to(sections, {
-            y: -half,
+          setupStickyStack();
+
+          const stickyTween = gsap.to(sections, {
+            y: () => -(items[0].getBoundingClientRect().height * 0.42),
             ease: "none",
             scrollTrigger: {
               trigger: target,
@@ -382,8 +386,11 @@ export default function Home() {
               end: "bottom bottom",
               scrub: true,
               invalidateOnRefresh: true,
+              onRefreshInit: setupStickyStack,
             },
           });
+
+          void stickyTween;
         }
       }
 
